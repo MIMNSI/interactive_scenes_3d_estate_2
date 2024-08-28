@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>3D Gaussian Splat Demo - Stump</title>
+  <script type="text/javascript" src="js/util.js"></script>
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "./lib/three.module.js",
+            "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+        }
+    }
+  </script>
+  <style>
+
+    body {
+      background-color: #ffffff;
+      height: 100vh;
+      margin: 0px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  <script type="module">
+    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = parseInt(urlParams.get('mode')) || 0;
+
+    const viewer = new GaussianSplats3D.Viewer({
+        'cameraUp': [0, 1, 0],
+        'initialCameraPosition': [2.60871, 3.92325, -4.24706],
+        'initialCameraLookAt': [-0.75989, 1.38027, -0.21266],
+        'sphericalHarmonicsDegree': 2
+    });
+    let path = 'assets/data/stag_black_back/stag_black_back' + (mode ? '' : '') + '.ply';
+    viewer.addSplatScene(path, {
+      'streamView': true
+    })
+    .then(() => {
+        viewer.start();
+    });
+  </script>
+</body>
+
+</html>
