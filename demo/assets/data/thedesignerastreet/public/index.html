@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+    <script>
+    window.addEventListener('click', function () {
+      var v = document.querySelector('#pinkpanther');
+      v.play();
+    });
+    </script>
+  </head>
+  <body>
+    <a-scene mindar-image="imageTargetSrc: ./street.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-assets>
+
+        <video id="pinkpanther"  loop="true" src="./Street.mov" webkit-playsinline playsinline></video>
+
+
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-video src="#pinkpanther" width="1.15" height="0.8" position="0 0 0"></a-video>
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
