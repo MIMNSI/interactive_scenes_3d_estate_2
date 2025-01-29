@@ -9965,7 +9965,7 @@ class Viewer {
 
     onMouseClick(mouse) {
         this.mousePosition.set(mouse.offsetX, mouse.offsetY);
-        this.checkForFocalPointChange();
+        //this.checkForFocalPointChange();  //Disabled Target Change
     }
 
     checkForFocalPointChange = function() {
