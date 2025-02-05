@@ -28,10 +28,10 @@ const loadFile = async (file) => {
     throw new Error(`Unsupported file extension: ${extension}`);
 };
 
-const gs = await loadFile("/Users/mukulingle/Downloads/uvrotated-2.ply"); // or gs.spz
+const gs = await loadFile("/Users/mukulingle/Downloads/uvrotated-3.ply"); // or gs.spz
 
 //const plyData = serializePly(gs);
 //writeFileSync("gs.ply", Buffer.from(plyData));
 
 const spzData = await serializeSpz(gs);
-writeFileSync("/Users/mukulingle/Downloads/uvrotated-2.spz", Buffer.from(spzData));
+writeFileSync("/Users/mukulingle/Downloads/uvrotated-3.spz", Buffer.from(spzData));

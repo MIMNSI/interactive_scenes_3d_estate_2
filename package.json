@@ -76,5 +76,8 @@
         "build/gaussian-splats-3d.umd.cjs.map",
         "build/gaussian-splats-3d.module.js",
         "build/gaussian-splats-3d.module.js.map"
-    ]
+    ],
+    "dependencies": {
+        "serve": "^14.2.4"
+    }
 }
