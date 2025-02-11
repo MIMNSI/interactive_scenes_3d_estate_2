@@ -4040,7 +4040,7 @@
 
                 rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight ); // yes, height
 
-                rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight );
+                //rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight ); //locked vertical movement for touch too
 
                 rotateStart.copy( rotateEnd );
 
