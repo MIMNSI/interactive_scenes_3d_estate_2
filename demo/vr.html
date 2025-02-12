@@ -35,10 +35,10 @@
       'initialCameraLookAt': [0.04327, -0.37530, 0],
       'webXRMode': GaussianSplats3D.WebXRMode.AR
     });
-    let path = 'assets/data/stag_white_chair/stag_white_chair.ply';
+    let path = 'assets/data/italicademochair/cropped_yellowchair.ply';
     viewer.addSplatScene(path, {
         'rotation': new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0.01933, -0.35830, 0).normalize(), new THREE.Vector3(0, 1, 0)).toArray(),
-        'scale': [0.5, 0.5, 0.5],
+        'scale': [1.5, 1.5, 1.5],
         'position': [0, -1.2, -2]
     })
     .then(() => {
