@@ -7,22 +7,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <style>
     /* Your existing CSS styles */
-    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; font-family: Arial, sans-serif; }
-    #renderCanvas { width: 100%; height: 100%; touch-action: none; }
-  
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    #renderCanvas {
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    #modeTabs {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      background: #1D1E22;
+      padding: 5px;
+      border-radius: 33px;
+      z-index: 1000;
+    }
+
+    #modeTabs button {
+      border-radius: 33px;
+      padding: 10px 30px;
+      font-size: 20px;
+      color: #ffffff;
+      background-color: #1D1E22;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #modeTabs button.active {
+      border-radius: 33px;
+      padding: 10px 30px;
+      font-size: 20px;
+      color: #222222;
+      border: none;
+      cursor: pointer;
+      background-color: #ffffff;
+      transition: background-color 0.3s;
+    }
+
+    .key_sec {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .key_sec ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 0;
+    }
+
+    .key_sec ul li {
+      width: calc((100% / 4) - 5px);
+    }
+
+    .key_sec ul li div {
+      padding: 10px 3px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+
+    .mouse_sec {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
     .ui-overlay {
       position: absolute;
       top: 10px;
       left: 10px;
-      background-color: rgba(0,0,0,0.7);
+      background-color: rgba(0, 0, 0, 0.7);
       padding: 15px;
       border-radius: 10px;
       color: white;
       z-index: 10;
       font-size: 14px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    
+
     #hotspotContent {
       position: fixed;
       background-color: rgba(0, 0, 0, 0.8);
@@ -31,28 +115,27 @@
       border-radius: 10px;
       z-index: 1001;
       max-width: 300px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       display: none;
       font-size: 14px;
     }
+
     #infoPopup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 0.8);
+      position: absolute;
+      bottom: 35px;
+      left: 10%;
+      background-color: rgba(0, 0, 0, 0.7);
       color: white;
-      padding: 20px;
-      border-radius: 10px;
-      z-index: 1002;
-      max-width: 80%;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      display: none;
-      font-size: 16px;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
     }
+
     #scrollControls {
       display: flex;
-      flex-direction: column;
+      /* flex-direction: column; */
       align-items: center;
       justify-content: center;
     }
@@ -61,14 +144,48 @@
       margin-bottom: 10px;
     }
 
+    #exploreControlsContent {
+      position: relative;
+    }
+
+    #exploreControlsContent .close_btn {
+      /* content: ""; */
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.9;
+      width: 40px;
+      height: 40px;
+      /* background-image: url('./images/x.svg');
+      background-size: cover;
+      background-repeat: no-repeat; */
+      cursor: pointer;
+    }
+
+    #exploreControlsContent .close_btn:hover svg rect {
+      fill: #fff;
+    }
+
+    #exploreControlsContent .close_btn:hover svg path {
+      stroke: #222222;
+    }
+
     #scrollControlsContent,
     #exploreControlsContent {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      gap: 40px;
       align-items: center;
       justify-content: center;
       transition: opacity 0.3s ease-in-out;
       width: 100%;
+    }
+
+    #exploreControlsContent {
+      gap: 90px !important;
+      justify-content: space-between !important;
+      margin: 0 8px;
     }
 
     #scrollControlsContent.hidden,
@@ -80,44 +197,85 @@
 
     #exploreControlsContent p {
       color: white;
-      font-size: 14px;
-      text-align: center;
+      font-size: 20px;
+      text-align: left;
       margin: 0;
     }
-    
+
     #scrollControls {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(0,0,0,0.7);
-      padding: 15px;
-      border-radius: 10px;
+      background-color: rgba(62, 62, 62, 0.35);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      padding: 8px 10px;
+      border-radius: 60px;
       color: white;
       z-index: 1000;
       display: flex;
-      flex-direction: column;
+      /* flex-direction: column; */
       align-items: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 25%);
     }
+
     #scrollPercentage {
       font-size: 18px;
       margin-bottom: 10px;
     }
+
     #progressBarContainer {
       width: 200px;
       height: 10px;
-      background-color: rgba(255,255,255,0.3);
+      background-color: rgba(255, 255, 255, 0.3);
       border-radius: 5px;
       overflow: hidden;
       margin-bottom: 10px;
     }
+
     #progressBar {
       width: 0%;
       height: 100%;
       background-color: #4CAF50;
       transition: width 0.3s ease;
     }
+
+    #controlsPlaceholder {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    #controlsPlaceholder:hover svg rect,
+    #scrollButtons svg.left_arrow:hover rect,
+    #scrollButtons svg.right_arrow:hover rect,
+    #scrollButtons svg.play_btn:hover rect.c {
+      fill: #ffffff;
+    }
+
+    svg.play_btn:hover rect {
+      fill: #ffffff;
+    }
+
+    svg.play_btn:hover path {
+      stroke: #222222;
+      fill: #222222;
+    }
+
+    #scrollButtons svg.play_btn:hover rect.d {
+      fill: #222222;
+    }
+
+    #controlsPlaceholder:hover svg path,
+    #scrollButtons svg.left_arrow:hover path,
+    #scrollButtons svg.right_arrow:hover path {
+      stroke: #222222;
+    }
+
     .button {
       background-color: #4CAF50;
       border: none;
@@ -132,20 +290,26 @@
       border-radius: 5px;
       transition: background-color 0.3s;
     }
+
     .button:hover {
-       background-color: #197c1d;
+      background-color: #197c1d;
     }
+
     #scrollButtons {
       display: flex;
       justify-content: space-between;
-      width: 100%;
+      gap: 20px;
     }
-    
+
+    #scrollButtons svg {
+      cursor: pointer;
+    }
+
     #muteButton {
       position: absolute;
       top: 10px;
       right: 10px;
-      background-color: rgba(0,0,0,0.7);
+      background-color: rgba(0, 0, 0, 0.7);
       color: white;
       border: none;
       padding: 10px;
@@ -191,46 +355,52 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
 
     /* Start Screen Frosted Glass Effect */
     #startButtonContainer {
-      position: absolute; 
-      width: 100%; 
-      height: 100%; 
-      background-color: rgba(255, 255, 255, 0.2); 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      z-index: 10000; 
-      backdrop-filter: blur(10px); 
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
+
     #startButton {
-      padding: 20px 40px; 
-      font-size: 24px; 
-      background-color: rgba(255, 255, 255, 0.25); 
-      color: white; 
-      border: none; 
-      border-radius: 5px; 
+      padding: 20px 40px;
+      font-size: 24px;
+      background-color: rgba(255, 255, 255, 0.25);
+      color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
     }
-    
+
     .ui-overlay {
       position: absolute;
       top: 10px;
       left: 10px;
-      background-color: rgba(0,0,0,0.7);
+      background-color: rgba(0, 0, 0, 0.7);
       padding: 15px;
       border-radius: 10px;
       color: white;
       z-index: 10;
       font-size: 14px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    
+
 
     /* Ensure the toggleCameraMode button has consistent styling */
     #toggleCameraMode {
@@ -247,8 +417,9 @@
       border-radius: 5px;
       transition: background-color 0.3s;
     }
+
     #toggleCameraMode:hover {
-       background-color: #197c1d;
+      background-color: #197c1d;
     }
 
     /* Joystick Styles */
@@ -258,12 +429,49 @@
       left: 50px;
       z-index: 1000;
     }
+
     #joystickCanvas {
       width: 100px;
       height: 100px;
       touch-action: none;
     }
 
+    @media only screen and (max-width: 768px) {
+      .key_sec ul li {
+        width: calc((100% / 3) - 5px);
+      }
+
+      .key_sec {
+        gap: 20px;
+      }
+
+      #modeTabs {
+        justify-content: space-between;
+        width: 70%;
+        top: 50px;
+      }
+
+      #modeTabs button,
+      #modeTabs button.active {
+        padding: 15px 30px;
+        font-size: 14px;
+      }
+
+      #exploreControlsContent {
+        flex-direction: column;
+        gap: 20px !important;
+        margin: 0;
+      }
+
+      .key_sec ul {
+        padding: 0;
+      }
+
+      #controlsPlaceholder,
+      #exploreControlsContent p {
+        font-size: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -271,44 +479,118 @@
     <h1>MetaShop AI</h1>
     <div class="spinner"></div>
   </div>
-  <!-- Start Screen -->
-  <div id="startButtonContainer">
+   <!-- Start Screen -->
+   <div id="startButtonContainer">
     <button id="startButton">Start Experience</button>
   </div>
   <canvas id="renderCanvas"></canvas>
   <!-- Movement Instructions -->
-  
-  <div class="ui-overlay">
+
+  <!-- <div class="ui-overlay">
     <p><strong>Controls:</strong></p>
-    <p>• W/A/S/D: Move camera</p>
+    <p>• Arrow Keys: Move camera</p>
     <p>• Q/E: Up and Down</p>
     <p>• Mouse: Look around</p>
     <p>• Scroll: Move along path</p>
-  </div>
-  
+    <p>• Mode: Toggle between Flythrough, and Manual explore</p>
+  </div> -->
+
   <!-- Hotspot and Info Popup -->
   <div id="hotspotContent"></div>
   <div id="infoPopup"></div>
   <!-- Scroll Controls -->
+  <div id="modeTabs">
+    <button id="manualExploreTab" onclick="toggleCameraMode()">Virtual Tour</button>
+    <button id="flythroughTab" class="active" onclick="toggleCameraMode()">Flythrough</button>
+  </div>
   
   <div id="scrollControls">
-    <!-- Scroll Controls Content -->
-        <div id="toggleCameraModeContainer">
-      <button id="toggleCameraMode" onclick="toggleCameraMode()">Mode: Explore</button>
+
+    <div id="toggleCameraModeContainer">
+      <!-- <button id="toggleCameraMode" onclick="toggleCameraMode()">Mode: Flythrough</button> -->
     </div>
+
     <div id="scrollControlsContent">
-      <div id="scrollPercentage">0%</div>
+      <!-- <div id="scrollPercentage">0%</div>
       <div id="progressBarContainer">
         <div id="progressBar"></div>
-      </div>
+      </div> -->
       <div id="scrollButtons">
-        <button class="button" onclick="handleButtonScroll(-1)">◀ Prev</button>
-        <button class="button" onclick="handleButtonScroll(1)">Next ▶</button>
+        <svg class="left_arrow" onclick="handleButtonScroll(-1)" width="40" height="40" viewBox="0 0 53 52" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <rect x="0.5" width="52" height="52" rx="26" fill="#222222" />
+          <path d="M30.5 17L18.7133 25.84C18.6067 25.92 18.6067 26.08 18.7133 26.16L30.5 35" stroke="white"
+            stroke-width="3" stroke-linecap="round" />
+        </svg>
+        <svg class="play_btn" onclick="togglePlayPause()" width="40" height="40" viewBox="0 0 53 52" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <rect class="c" x="0.5" width="52" height="52" rx="26" fill="#222222" />
+          <rect class="c" width="20" height="24" transform="translate(16.5 14)" fill="#222222" />
+          <rect class="d" x="20.5" y="14" width="4.4" height="23.76" rx="0.88" fill="white" />
+          <rect class="d" x="28.9" y="14" width="4.4" height="23.76" rx="0.88" fill="white" />
+        </svg>
+
+        <svg class="right_arrow" onclick="handleButtonScroll(1)" width="40" height="40" viewBox="0 0 53 52" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <rect width="52" height="52" rx="26" transform="matrix(-1 0 0 1 52.5 0)" fill="#222222" />
+          <path d="M22.5 17L34.2867 25.84C34.3933 25.92 34.3933 26.08 34.2867 26.16L22.5 35" stroke="white"
+            stroke-width="3" stroke-linecap="round" />
+        </svg>
+
+
+
       </div>
     </div>
     <div id="exploreControlsContent">
-      <p>Use WASD to move and mouse to look around</p>
+      <div class="close_btn">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="40" height="40" rx="20" transform="matrix(-1 0 0 1 40 0)" fill="#222222" />
+          <path d="M26 14L14 26" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M14 14L26 26" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+      </div>
+      <div class="key_sec">
+        <p>Move</p>
+        <ul>
+          <li>
+            <div>W</div>
+          </li>
+          <li>
+            <div>A</div>
+          </li>
+          <li>
+            <div>S</div>
+          </li>
+          <li>
+            <div>D</div>
+          </li>
+          <li>
+            <div>&uarr;</div>
+          </li>
+          <li>
+            <div>&larr;</div>
+          </li>
+          <li>
+            <div>&darr;</div>
+          </li>
+          <li>
+            <div>&rarr;</div>
+          </li>
+        </ul>
+      </div>
+      <div class="mouse_sec">
+        <div class="img_sec"><img src="./images/mouse.svg" alt="mouse"></div>
+        <p>Hold and drag Left<br /> mouse button to explore</p>
+      </div>
     </div>
+    <div id="controlsPlaceholder"><svg width="40" height="40" viewBox="0 0 52 53" fill="none"
+        xmlns="http://www.w3.org/2000/svg">
+        <rect width="52" height="51.358" rx="25.679" transform="matrix(-1 0 0 1 52 0.814941)" fill="#222222" />
+        <path d="M17 31.1543L25.8586 22.2957C25.9367 22.2176 26.0633 22.2176 26.1414 22.2957L35 31.1543" stroke="white"
+          stroke-width="3" stroke-linecap="round" />
+      </svg>
+      Controls</div>
   </div>
   
   <!-- Mute Button -->
@@ -318,12 +600,32 @@
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
   <script>
+
+    const exploreControls = document.getElementById("exploreControlsContent");
+    const controlsPlaceholder = document.getElementById("controlsPlaceholder");
+
+    // Click event on exploreControlsContent (pseudo-element workaround)
+    exploreControls.addEventListener("click", function (e) {
+      const rect = exploreControls.getBoundingClientRect();
+      if (e.clientY < rect.top && e.clientX > rect.left && e.clientX < rect.right) {
+        exploreControls.style.display = "none";
+        controlsPlaceholder.style.display = "flex";
+      }
+    });
+
+    // Show controls when clicking on "? controls"
+    controlsPlaceholder.addEventListener("click", function () {
+      exploreControls.style.display = "flex";
+      controlsPlaceholder.style.display = "none";
+    });
+
+
     // Initialize cameraMode and other variables
-    let cameraMode = 'explore';
-    const allowedCameraModes = ["explore"];
-    let loopMode = false;
+    let cameraMode = 'tour';
+    const allowedCameraModes = ["tour","explore"];
+    let loopMode = true;
     let autoPlaySpeed = 0.05;
-    let autoPlayEnabled = false;
+    let autoPlayEnabled = true;
 
     // Function to update scroll controls visibility
     function updateScrollControlsVisibility() {
@@ -361,9 +663,34 @@
             BABYLON.VirtualJoystick.Canvas.style.zIndex = "-10";
         }
 
+
+        // Get buttons
+      const manualButton = document.getElementById("manualExploreTab");
+      const exploreButton = document.getElementById("flythroughTab");
+
+      // Remove 'active' class from all buttons
+      manualButton.classList.remove("active");
+      exploreButton.classList.remove("active");
+
+      // Check the active tab using the function and apply the class
+      if (getActiveTab(cameraMode)) {
+        if (cameraMode === "explore") {
+          manualButton.classList.add("active");
+        } else if (cameraMode === "tour") {
+          exploreButton.classList.add("active");
+        }
+      }
+
+      togglePlayPauseIcon();
+
       // For 'auto' mode, userControl will be dynamically updated based on user interactions
       updateScrollControlsVisibility();
       console.log('Camera Mode:', cameraMode);
+    }
+
+    function getActiveTab(tab) {
+      // Logic to determine the active tab
+      return tab === "explore" || tab === "tour"; // Example condition
     }
 
     updateScrollControlsVisibility();
@@ -490,7 +817,7 @@
     let scrollTarget = 0.01; // Start with a small value to enable scrolling
 
     // Prepare waypoints and rotations
-    const waypoints = [{"x":-3.5831032897618638,"y":10.389308089073728,"z":18.55299578730179,"rotation":{"_isDirty":true,"_x":0.026069576964614764,"_y":0.927937937037227,"_z":-0.06611412372869997,"_w":0.36589684014891877},"interactions":[],"triggerDistance":1}];
+    const waypoints = [{"x":-4.264318466186523,"y":10.197607040405273,"z":12.492234230041504,"rotation":{"_isDirty":true,"_x":0.051863424624766445,"_y":0.5410658769205113,"_z":-0.03345786964730938,"_w":0.8387123899031735},"interactions":[],"triggerDistance":1},{"x":0.8260993065810717,"y":10.066627706511337,"z":10.550613477985532,"rotation":{"_isDirty":true,"_x":0.06497678004944682,"_y":-0.08468079630394121,"_z":0.005533985260947834,"_w":0.9942718721752456},"interactions":[],"triggerDistance":1},{"x":2.5712573528289795,"y":9.792003631591797,"z":16.052982330322266,"rotation":{"_isDirty":true,"_x":0.057135986608105024,"_y":-0.6649960396774205,"_z":0.0511444549275273,"_w":0.7428997179820647},"interactions":[],"triggerDistance":1},{"x":-3.094709634780884,"y":9.83144760131836,"z":19.03649139404297,"rotation":{"_isDirty":true,"_x":0.028224859005161147,"_y":0.9403383998478785,"_z":-0.08058515645810496,"_w":0.32935252187328545},"interactions":[],"triggerDistance":1},{"x":-3.868712902069092,"y":10.199342727661133,"z":14.237480163574219,"rotation":{"_isDirty":true,"_x":0.018769937179325877,"_y":0.9598787543833207,"_z":-0.06628187318953262,"_w":0.27182196310875206},"interactions":[],"triggerDistance":1},{"x":-4.416097640991211,"y":10.199342727661133,"z":12.529064178466797,"rotation":{"_isDirty":true,"_x":0.08584445414818097,"_y":0.5404644334752422,"_z":-0.0555552644680632,"_w":0.8351302523739457},"interactions":[],"triggerDistance":1}];
     const controlPoints = waypoints.map(
       (wp) => new BABYLON.Vector3(wp.x, wp.y, wp.z)
     );
@@ -786,7 +1113,7 @@
     const scrollAmount = 10;
 
     function handleButtonScroll(direction) {
-      if (cameraMode === 'explore') {
+      if (cameraMode === 'manual explore') {
         return;
       }
       if (scrollButtonMode === 'percentage') {
@@ -794,6 +1121,31 @@
       } else {
         moveToWaypoint(direction);
       }
+    }
+
+    let isPlaying = true;
+    const playPauseButton = document.querySelector('.play_btn');
+
+    // Play and Pause SVG icons
+    const pauseSVG = `<rect class="c" x="0.5" width="52" height="52" rx="26" fill="#222222" />
+                  <rect class="d" x="20.5" y="14" width="4.4" height="23.76" rx="0.88" fill="white" />
+                  <rect class="d" x="28.9" y="14" width="4.4" height="23.76" rx="0.88" fill="white" />`;
+
+    const playSVG = `<rect x="0.5" width="52" height="52" rx="26" fill="#222222"/>
+  <path d="M39.36 24.4758C40.5333 25.1532 40.5333 26.8468 39.36 27.5242L22.14 37.4662C20.9667 38.1436 19.5 37.2968 19.5 35.942V16.058C19.5 14.7032 20.9667 13.8564 22.14 14.5338L39.36 24.4758Z" fill="white"/>`;
+
+    function togglePlayPause() {
+      userControl = !userControl;
+      playPauseButton.innerHTML = !userControl ? pauseSVG : playSVG;
+      updateScrollControlsVisibility();
+    }
+
+    function togglePlayPauseIcon() {
+      playPauseButton.innerHTML = !userControl ? pauseSVG : playSVG;
+    }
+
+    document.getElementById('renderCanvas').onclick = function (e) {
+      togglePlayPauseIcon();
     }
 
     function adjustScroll(amount) {
