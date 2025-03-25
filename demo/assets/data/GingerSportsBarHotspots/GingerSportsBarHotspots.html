@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Exported Scene</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <style>
+      @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
+
+      /* Define the Klapt font with a number of weights */
+      @font-face {
+        font-family: "Klapt";
+        src: url("fonts/Klapt-Medium.otf") format("opentype");
+        font-weight: 500; /* Medium weight */
+        font-style: normal;
+      }
+
+      @font-face {
+        font-family: "Klapt";
+        src: url("fonts/Klapt-Bold.otf") format("opentype");
+        font-weight: 700; /* Bold weight */
+        font-style: normal;
+      }
+
+      * {
+        -webkit-font-smoothing: antialiased;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0px;
+        height: 100%;
+      }
+      /* a blue color as a generic focus style */
+      button:focus-visible {
+        outline: 2px solid #4a90e2 !important;
+        outline: -webkit-focus-ring-color auto 5px !important;
+      }
+      a {
+        text-decoration: none;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+
+      /* Hide the mode tabs (already hidden, keeping for consistency) */
+      #modeTabs {
+        display: none;
+      }
+
+      #modeTabs button {
+        border-radius: 33px;
+        padding: 10px 30px;
+        font-size: 20px;
+        color: #ffffff;
+        background-color: #1d1e22;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      #modeTabs button.active {
+        border-radius: 33px;
+        padding: 10px 30px;
+        font-size: 20px;
+        color: #222222;
+        border: none;
+        cursor: pointer;
+        background-color: #ffffff;
+        transition: background-color 0.3s;
+      }
+
+      .ui-overlay {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 15px;
+        border-radius: 10px;
+        color: white;
+        z-index: 10;
+        font-size: 14px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      #hotspotContent {
+        position: fixed;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1001;
+        max-width: 300px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        display: none;
+        font-size: 14px;
+      }
+
+      #infoPopup {
+        position: absolute;
+        bottom: 35px;
+        left: 10%;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
+      }
+
+      #scrollControls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #toggleCameraModeContainer {
+        margin-bottom: 10px;
+      }
+
+      #scrollControlsContent {
+        display: flex;
+        flex-direction: row;
+        gap: 40px;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease-in-out;
+        width: 100%;
+      }
+
+      #scrollControlsContent.hidden {
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      #scrollControls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(62, 62, 62, 0.35);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        padding: 8px 10px;
+        border-radius: 60px;
+        color: white;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 25%);
+        opacity: 0;
+      }
+
+      .button {
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      .button:hover {
+        background-color: #197c1d;
+      }
+
+      #scrollButtons {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      #scrollButtons svg {
+        cursor: pointer;
+      }
+
+      #scrollButtons svg.left_arrow:hover rect,
+      #scrollButtons svg.right_arrow:hover rect,
+      #scrollButtons svg.play_btn:hover rect.c {
+        fill: #ffffff;
+      }
+
+      svg.play_btn:hover rect {
+        fill: #ffffff;
+      }
+
+      svg.play_btn:hover path {
+        stroke: #222222;
+        fill: #222222;
+      }
+
+      #scrollButtons svg.play_btn:hover rect.d {
+        fill: #222222;
+      }
+
+      #scrollButtons svg.left_arrow:hover path,
+      #scrollButtons svg.right_arrow:hover path {
+        stroke: #222222;
+      }
+
+      #muteButton {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        z-index: 1000;
+      }
+
+      #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #1e1e1e;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 100000;
+        transition: opacity 0.5s ease-out;
+      }
+
+      #preloader.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #preloader h1 {
+        font-size: 48px;
+        color: #ffffff;
+        text-align: center;
+        font-family: "Courier New", monospace;
+      }
+
+      #preloader .spinner {
+        width: 25px;
+        height: 25px;
+        border: 5px solid #ffffff;
+        border-top: 5px solid #f76900;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #startButtonContainer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      #startButton {
+        padding: 20px 40px;
+        font-size: 24px;
+        background-color: rgba(255, 255, 255, 0.25);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #toggleCameraMode {
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+      }
+
+      #toggleCameraMode:hover {
+        background-color: #197c1d;
+      }
+
+      #joystickContainer {
+        position: absolute;
+        bottom: 50px;
+        left: 50px;
+        z-index: 1000;
+      }
+
+      #joystickCanvas {
+        width: 100px;
+        height: 100px;
+        touch-action: none;
+      }
+
+      /* Updated gradient container with new gradient and properties */
+      .gradient-box {
+        position: fixed;
+        width: 305px;
+        height: 860px;
+        flex-shrink: 0;
+        top: 0;
+        left: 0;
+        background: linear-gradient(
+          271deg,
+          rgba(0, 0, 0, 0) 0.86%,
+          #000 99.05%
+        );
+        z-index: 999; /* Ensure it's behind the waypoint container but above the canvas */
+      }
+
+      /* Container for waypoint controls and title */
+      #waypointContainer {
+        position: absolute;
+        top: 50px; /* Adjusted to give space for the title */
+        left: 20px;
+        z-index: 1000; /* Ensure it stays above the gradient */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center the title and buttons */
+      }
+
+      #waypointControls {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      /* Title styling */
+      #waypointTitle {
+        color: #ffffff;
+        font-family: "Klapt"; /* Updated to Klapt */
+        font-weight: 700; /* Bold */
+        font-size: 20px; /* Adjusted to match screenshot */
+        text-align: center;
+        letter-spacing: 1px; /* Slight letter spacing for better readability */
+        margin-bottom: 20px; /* Increased spacing between title and buttons */
+      }
+
+      /* Updated waypoint button styling to match the screenshot exactly */
+      .waypoint-button {
+        position: relative;
+        height: 53px;
+        width: 211px;
+        background-size: 100% 100%;
+        background-color: transparent; /* Ensure no background color overlay */
+        border: none;
+        cursor: pointer;
+        font-family: "Klapt"; /* Updated to Klapt */
+        font-weight: 500; /* Medium weight */
+        font-size: 13px;
+        text-align: center;
+        letter-spacing: 0;
+        line-height: normal;
+        margin-bottom: 10px;
+        padding: 0; /* Remove default padding to ensure SVG fits exactly */
+      }
+
+      /* Specific styles for each button's normal state */
+      .waypoint-button.flight-deck {
+        background-image: url("vector-1.svg"); /* Normal state for FLIGHT DECK */
+        color: #000000; /* Black text for FLIGHT DECK */
+      }
+
+      .waypoint-button.naked-f77 {
+        background-image: url("vector-2.svg"); /* Normal state for NAKED F77 */
+        color: #000000; /* Black text for NAKED F77 */
+      }
+
+      .waypoint-button.accessories {
+        background-image: url("vector-3.svg"); /* Normal state for ACCESSORIES */
+        color: #000000; /* Black text for ACCESSORIES */
+      }
+
+      .waypoint-button.uv-airspace {
+        background-image: url("vector-4.svg"); /* Normal state for UV AIRSPACE */
+        color: #000000; /* Black text for UV AIRSPACE */
+      }
+
+      .waypoint-button.full-view {
+        background-image: url("vector-5.svg"); /* Normal state for FULL VIEW */
+        color: #000000; /* Black text for FULL VIEW */
+      }
+
+      /* Active/Selected state for buttons */
+      .waypoint-button.active {
+        background-image: url("vector-active.svg") !important; /* Active state for all buttons */
+        background-color: transparent !important; /* Ensure no background color overlay */
+        background-size: 100% 100% !important;
+        color: #ffffff !important; /* White text for active state */
+      }
+
+      /* Hover effect: Same as active state */
+      .waypoint-button:hover:not(.active) {
+        background-image: url("vector-active.svg") !important; /* Same as active state */
+        background-color: transparent !important; /* Ensure no background color overlay */
+        background-size: 100% 100% !important;
+        color: #ffffff !important; /* White text on hover */
+      }
+
+      /* Text at bottom center with brackets (based on your HTML/CSS) */
+      .bottom-text {
+        position: absolute;
+        width: 614px;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Klapt"; /* Updated to Klapt */
+        font-weight: 500; /* Medium weight */
+        color: #ffffff;
+        font-size: 20.1px;
+        text-align: center;
+        letter-spacing: 0;
+        line-height: normal;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bottom-text img {
+        width: 13px;
+        height: 57px;
+        margin: 0 10px; /* Spacing between brackets and text */
+      }
+
+      .bottom-text .text-content {
+        flex: 1;
+      }
+
+      /* Container for Reset View and Exit buttons */
+      #actionButtons {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 1000;
+      }
+
+      /* Apply waypoint-button styling to Reset View and Exit buttons */
+      #resetViewButton,
+      #exitButton {
+        position: relative;
+        height: 53px;
+        width: 211px;
+        background-size: 100% 100%;
+        background-color: transparent; /* Ensure no background color overlay */
+        border: none;
+        cursor: pointer;
+        font-family: "Klapt"; /* Updated to Klapt */
+        font-weight: 500; /* Medium weight */
+        font-size: 13px;
+        text-align: center;
+        letter-spacing: 0;
+        line-height: normal;
+        margin-bottom: 10px;
+        padding: 0; /* Remove default padding to ensure SVG fits exactly */
+      }
+
+      /* Specific styles for Reset View and Exit buttons */
+      #resetViewButton {
+        background-image: url("vector-6.svg"); /* Placeholder SVG for RESET VIEW */
+        color: #000000; /* Black text */
+      }
+
+      #exitButton {
+        background-image: url("vector-7.svg"); /* Placeholder SVG for EXIT */
+        color: #000000; /* Black text */
+      }
+
+      /* Hover effect for Reset View and Exit buttons: Same as active state */
+      #resetViewButton:hover:not(.active),
+      #exitButton:hover:not(.active) {
+        background-image: url("vector-active.svg") !important; /* Same as active state */
+        background-color: transparent !important; /* Ensure no background color overlay */
+        background-size: 100% 100% !important;
+        color: #ffffff !important; /* White text on hover */
+      }
+
+      @media only screen and (max-width: 768px) {
+        #modeTabs {
+          display: none; /* Hide on mobile as well */
+        }
+
+        #modeTabs button,
+        #modeTabs button.active {
+          padding: 15px 30px;
+          font-size: 14px;
+        }
+
+        .gradient-box {
+          width: 200px; /* Adjust width for mobile */
+          height: 600px; /* Adjust height for mobile */
+          flex-shrink: 0;
+        }
+
+        #waypointContainer {
+          top: 40px; /* Adjusted for mobile */
+          left: 5px;
+        }
+
+        #waypointTitle {
+          font-size: 16px; /* Smaller title for mobile */
+          margin-bottom: 15px; /* Adjusted spacing for mobile */
+        }
+
+        #waypointControls {
+          width: 120px;
+        }
+
+        .waypoint-button {
+          width: 120px;
+          height: 40px;
+          font-size: 12px;
+          margin-bottom: 5px;
+        }
+
+        .waypoint-button.active {
+          background-image: url("vector-active.svg") !important;
+          background-color: transparent !important; /* Ensure no background color overlay */
+          background-size: 100% 100% !important;
+          color: #ffffff !important;
+        }
+
+        .bottom-text {
+          width: 300px; /* Reduced width for mobile */
+          font-size: 16px; /* Smaller text for mobile */
+          bottom: 10px; /* Adjust position for mobile */
+        }
+
+        .bottom-text img {
+          width: 10px; /* Reduced size for mobile */
+          height: 40px; /* Reduced size for mobile */
+          margin: 0 5px; /* Reduced spacing for mobile */
+        }
+
+        #actionButtons {
+          bottom: 10px;
+          right: 10px;
+          gap: 8px;
+        }
+
+        #resetViewButton,
+        #exitButton {
+          width: 120px;
+          height: 40px;
+          font-size: 12px;
+          margin-bottom: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="preloader">
+      <h1>MetaShop AI</h1>
+      <div class="spinner"></div>
+    </div>
+    <div id="startButtonContainer">
+      <button id="startButton">Start Experience</button>
+    </div>
+    <canvas id="renderCanvas"></canvas>
+    <div id="hotspotContent"></div>
+    <div id="waypointText" class="bottom-text"></div>
+    <!-- Updated for brackets -->
+
+    <!-- Gradient background behind the title and buttons -->
+    <div class="gradient-box"></div>
+
+    <!-- Container for the title and waypoint buttons -->
+    <div id="waypointContainer">
+      <div id="waypointTitle">TAKE A CLOSER LOOK</div>
+      <div id="waypointControls"></div>
+    </div>
+
+    <!-- Scroll controls -->
+    <div id="scrollControls">
+      <div id="toggleCameraModeContainer"></div>
+      <div id="scrollControlsContent">
+        <div id="scrollButtons">
+          <svg
+            class="left_arrow"
+            onclick="handleButtonScroll(-1)"
+            width="40"
+            height="40"
+            viewBox="0 0 53 52"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect x="0.5" width="52" height="52" rx="26" fill="#222222" />
+            <path
+              d="M30.5 17L18.7133 25.84C18.6067 25.92 18.6067 26.08 18.7133 26.16L30.5 35"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+          </svg>
+          <svg
+            class="play_btn"
+            onclick="togglePlayPause()"
+            width="40"
+            height="40"
+            viewBox="0 0 53 52"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              class="c"
+              x="0.5"
+              width="52"
+              height="52"
+              rx="26"
+              fill="#222222"
+            />
+            <rect
+              class="c"
+              width="20"
+              height="24"
+              transform="translate(16.5 14)"
+              fill="#222222"
+            />
+            <rect
+              class="d"
+              x="20.5"
+              y="14"
+              width="4.4"
+              height="23.76"
+              rx="0.88"
+              fill="white"
+            />
+            <rect
+              class="d"
+              x="28.9"
+              y="14"
+              width="4.4"
+              height="23.76"
+              rx="0.88"
+              fill="white"
+            />
+          </svg>
+          <svg
+            class="right_arrow"
+            onclick="handleButtonScroll(1)"
+            width="40"
+            height="40"
+            viewBox="0 0 53 52"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              width="52"
+              height="52"
+              rx="26"
+              transform="matrix(-1 0 0 1 52.5 0)"
+              fill="#222222"
+            />
+            <path
+              d="M22.5 17L34.2867 25.84C34.3933 25.92 34.3933 26.08 34.2867 26.16L22.5 35"
+              stroke="white"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <button id="muteButton">🔊 Mute</button>
+
+    <!-- Container for Reset View and Exit buttons -->
+    <div id="actionButtons">
+      <button id="resetViewButton">RESET VIEW</button>
+      <button id="exitButton">EXIT</button>
+    </div>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script>
+      let cameraMode = "tour"; // Default to tour mode since mode tabs are hidden
+      const allowedCameraModes = ["tour", "explore"];
+      let loopMode = true;
+      let autoPlaySpeed = 0.23;
+      let autoPlayEnabled = true;
+      let lastClickedButton = null; // Track the last clicked button to reset its style
+
+      function updateScrollControlsVisibility() {
+        const scrollControlsContent = document.getElementById(
+          "scrollControlsContent"
+        );
+        const waypointControls = document.getElementById("waypointControls");
+        const scrollButtons = document.getElementById("scrollButtons");
+
+        if (cameraMode === "explore") {
+          scrollControlsContent.classList.add("hidden");
+          waypointControls.style.display = "flex"; // Keep waypoint buttons visible
+          scrollButtons.style.display = "none"; // Hide scroll buttons in explore mode
+        } else {
+          scrollControlsContent.classList.remove("hidden");
+          waypointControls.style.display = "flex"; // Keep waypoint buttons visible
+          scrollButtons.style.display = "none"; // Show scroll buttons in tour mode
+        }
+      }
+
+      function getActiveTab(tab) {
+        return tab === "explore" || tab === "tour";
+      }
+
+      updateScrollControlsVisibility();
+
+      const preloader = document.getElementById("preloader");
+      const canvas = document.getElementById("renderCanvas");
+      const engine = new BABYLON.Engine(canvas, true);
+      const scene = new BABYLON.Scene(engine);
+      window.scene = scene;
+
+      scene.clearColor = BABYLON.Color3.FromHexString("#7D7D7D").toColor4(1);
+
+      const camera = new BABYLON.UniversalCamera(
+        "camera",
+        new BABYLON.Vector3(
+          -66.29511415934459,
+          23.434474780550627,
+          19.180654341809763
+        ),
+        scene
+      );
+      camera.attachControl(canvas, true);
+      camera.speed = 0.3;
+      camera.angularSensibility = 4000;
+
+      camera.rotationQuaternion = new BABYLON.Quaternion(
+        0.05548233138230493,
+        -0.2963542828532684,
+        0.017247737083718382,
+        0.9533091664224409
+      ).normalize();
+      camera.rotation = camera.rotationQuaternion.toEulerAngles();
+
+      camera.keysUp.push(87); // W
+      camera.keysDown.push(83); // S
+      camera.keysLeft.push(65); // A
+      camera.keysRight.push(68); // D
+      camera.keysUpward.push(81); // Q
+      camera.keysDownward.push(69); // E
+      camera.inputs.addGamepad();
+
+      let userControl = cameraMode === "explore";
+      let animatingToPath = false;
+
+      const isMobileDevice =
+        /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
+          navigator.userAgent.toLowerCase()
+        );
+
+      if (isMobileDevice) {
+        var leftJoystick = new BABYLON.VirtualJoystick(true);
+        var rightJoystick = new BABYLON.VirtualJoystick(false);
+        if (cameraMode === "tour") {
+          if (BABYLON.VirtualJoystick.Canvas) {
+            BABYLON.VirtualJoystick.Canvas.style.zIndex = "-10";
+          }
+        } else {
+          if (BABYLON.VirtualJoystick.Canvas) {
+            BABYLON.VirtualJoystick.Canvas.style.zIndex = "10";
+          }
+        }
+
+        scene.onBeforeRenderObservable.add(() => {
+          if (leftJoystick.pressed) {
+            userControl = true;
+            const deltaTime = engine.getDeltaTime() / 1000;
+            const moveSpeed = deltaTime * 5 * 1.05;
+            const moveX = leftJoystick.deltaPosition.x * moveSpeed;
+            const moveZ = leftJoystick.deltaPosition.y * moveSpeed;
+            const forward = camera.getDirection(BABYLON.Axis.Z);
+            const right = camera.getDirection(BABYLON.Axis.X);
+            const move = forward.scale(moveZ).add(right.scale(moveX));
+            camera.position.addInPlace(move);
+          }
+          if (rightJoystick.pressed) {
+            const deltaX = rightJoystick.deltaPosition.x;
+            const deltaY = rightJoystick.deltaPosition.y;
+            const angularSensibility = 200 * 1.05;
+            const currentEuler = camera.rotationQuaternion.toEulerAngles();
+            let yaw = currentEuler.y;
+            let pitch = currentEuler.x;
+            yaw += deltaX / angularSensibility;
+            pitch -= deltaY / angularSensibility;
+            const maxPitch = Math.PI / 2;
+            pitch = Math.max(-maxPitch, Math.min(maxPitch, pitch));
+            camera.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(
+              yaw,
+              pitch,
+              0
+            );
+          }
+        });
+      }
+
+      camera.checkCollisions = true;
+      camera.applyGravity = false;
+      camera.ellipsoid = new BABYLON.Vector3(0.1, 0.1, 0.1);
+
+      new BABYLON.HemisphericLight(
+        "light",
+        new BABYLON.Vector3(0, 1, 0),
+        scene
+      );
+
+      let scrollPosition = 0;
+      let scrollTarget = 0.01;
+
+      const waypoints = [
+        {
+          "x":-16.40778679629845,"y":13.242923835218182,"z":-26.09061645746769,"rotation":{"_isDirty":true,"_x":0.12464492881938612,"_y":-0.1449511357427106,"_z":0.018410155418658987,"_w":0.9813836605009111},
+          interactions: [],
+          triggerDistance: 1,
+          name: "FLIGHT DECK",
+        }, // Index 0
+        {
+          "x":-12.51397434047653,"y":12.922762854527306,"z":-15.432586071434518,"rotation":{"_isDirty":true,"_x":0.06042590927535399,"_y":-0.7844112607744402,"_z":0.07739592676402497,"_w":0.6124194157878652},
+          interactions: [],
+          triggerDistance: 2,
+          name: "NAKED F77",
+        }, // Index 1
+        {
+          "x":-17.156559897936287,"y":13.055113678967775,"z":-13.95781851465115,"rotation":{"_isDirty":true,"_x":0.041922056000052665,"_y":0.9415567443980665,"_z":-0.12780997457745563,"_w":0.30883339426247025},
+          interactions: [],
+          triggerDistance: 1,
+          name: "ACCESSORIES",
+        }, // Index 2
+        {
+          "x":-17.24359026227006,"y":12.688563441163897,"z":-19.312396344965165,"rotation":{"_isDirty":true,"_x":0.03481326891667843,"_y":0.9284143385410408,"_z":-0.09008762414710743,"_w":0.358774390891512},
+          interactions: [],
+          triggerDistance: 2,
+          name: "UV AIRSPACE",
+        }, // Index 3
+        {
+          "x":-17.957389014201038,"y":12.836333685310764,"z":-25.841402614839083,"rotation":{"_isDirty":true,"_x":0.0864360348055379,"_y":0.4618903939344021,"_z":-0.04528824473439922,"_w":0.8815526412174601},          
+          interactions: [],
+          triggerDistance: 1,
+          name: "FULL VIEW",
+        }, // Index 4
+      ];
+      const controlPoints = waypoints.map(
+        (wp) => new BABYLON.Vector3(wp.x, wp.y, wp.z)
+      );
+      const rotations = waypoints.map((wp) =>
+        new BABYLON.Quaternion(
+          wp.rotation._x,
+          wp.rotation._y,
+          wp.rotation._z,
+          wp.rotation._w
+        ).normalize()
+      );
+
+      let path = [];
+      if (controlPoints.length >= 2) {
+        const positionCurve = BABYLON.Curve3.CreateCatmullRomSpline(
+          controlPoints,
+          20,
+          false
+        );
+        path = positionCurve.getPoints();
+      } else if (controlPoints.length === 1) {
+        path = [controlPoints[0]];
+      }
+
+      const hotspots = [];
+
+      hotspots.forEach((hotspot) => {
+        const scale =
+          hotspot.scale._x === 0 &&
+          hotspot.scale._y === 0 &&
+          hotspot.scale._z === 0
+            ? new BABYLON.Vector3(1, 1, 1)
+            : new BABYLON.Vector3(
+                hotspot.scale._x,
+                hotspot.scale._y,
+                hotspot.scale._z
+              );
+
+        const sphere = BABYLON.MeshBuilder.CreateSphere(
+          `hotspot-${hotspot.id}`,
+          { diameter: 0.2 },
+          scene
+        );
+        sphere.position = new BABYLON.Vector3(
+          hotspot.position._x,
+          hotspot.position._y,
+          hotspot.position._z
+        );
+        sphere.scaling = scale;
+
+        const material = new BABYLON.StandardMaterial(
+          `hotspot-material-${hotspot.id}`,
+          scene
+        );
+        material.diffuseColor = BABYLON.Color3.FromHexString(hotspot.color);
+        material.emissiveColor = BABYLON.Color3.FromHexString(
+          hotspot.color
+        ).scale(0.5);
+        sphere.material = material;
+
+        sphere.isPickable = true;
+
+        sphere.actionManager = new BABYLON.ActionManager(scene);
+        sphere.actionManager.registerAction(
+          new BABYLON.ExecuteCodeAction(
+            BABYLON.ActionManager.OnPointerOverTrigger,
+            () => {
+              material.emissiveColor = BABYLON.Color3.FromHexString(
+                hotspot.color
+              );
+              if (hotspot.activationMode === "hover") {
+                showHotspotContent(hotspot);
+              }
+            }
+          )
+        );
+        sphere.actionManager.registerAction(
+          new BABYLON.ExecuteCodeAction(
+            BABYLON.ActionManager.OnPointerOutTrigger,
+            () => {
+              material.emissiveColor = BABYLON.Color3.FromHexString(
+                hotspot.color
+              ).scale(0.5);
+              if (hotspot.activationMode === "hover") {
+                hideHotspotContent();
+              }
+            }
+          )
+        );
+        if (hotspot.activationMode === "click") {
+          sphere.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
+              BABYLON.ActionManager.OnPickTrigger,
+              () => {
+                showHotspotContent(hotspot);
+              }
+            )
+          );
+        }
+      });
+
+      function showHotspotContent(hotspot) {
+        const hotspotContent = document.getElementById("hotspotContent");
+        hotspotContent.innerHTML = `
+        <h3>${hotspot.title}</h3>
+        ${
+          hotspot.photoUrl
+            ? `<img src="${hotspot.photoUrl}" alt="${hotspot.title}" style="width: 100%; margin-bottom: 10px; border-radius: 5px;">`
+            : ""
+        }
+        ${hotspot.information ? `<p>${hotspot.information}</p>` : ""}
+        ${
+          hotspot.activationMode === "click"
+            ? '<button onclick="hideHotspotContent()" style="width: 100%; padding: 10px; background-color: #4CAF50; border: none; color: white; cursor: pointer; border-radius: 5px;">Close</button>'
+            : ""
+        }
+      `;
+        hotspotContent.style.display = "block";
+        positionHotspotContent(hotspotContent);
+      }
+
+      function hideHotspotContent() {
+        const hotspotContent = document.getElementById("hotspotContent");
+        hotspotContent.style.display = "none";
+      }
+
+      function positionHotspotContent(element) {
+        const rect = element.getBoundingClientRect();
+        let left = scene.pointerX + 10;
+        let top = scene.pointerY + 10;
+
+        if (left + rect.width > window.innerWidth) {
+          left = window.innerWidth - rect.width - 10;
+        }
+        if (top + rect.height > window.innerHeight) {
+          top = window.innerHeight - rect.height - 10;
+        }
+
+        element.style.left = `${left}px`;
+        element.style.top = `${top}px`;
+      }
+
+      const collisionMeshesData = [{"meshData":null,"position":{"_isDirty":true,"_x":-15.241791725158691,"_y":12.158032417297363,"_z":-31.2955379486084},"rotation":{"_isDirty":true,"_x":-0.02534577081264348,"_y":-3.1305727912890453,"_z":-0.01317705469874224},"scaling":{"_isDirty":true,"_x":3.2109461578573235,"_y":3.9372137184746023,"_z":1.0000001177280726}},{"meshData":null,"position":{"_isDirty":true,"_x":-16.933454513549805,"_y":11.706111907958984,"_z":-23.461027145385742},"rotation":{"_isDirty":true,"_x":0.017108663929538116,"_y":-1.6094748317356797,"_z":0.001104226200707276},"scaling":{"_isDirty":true,"_x":36791.902651121854,"_y":1.801592704418521,"_z":0.9999998526748608}},{"meshData":null,"position":{"_isDirty":true,"_x":-15.17136287689209,"_y":12.200531005859375,"_z":-16.046985626220703},"rotation":{"_isDirty":true,"_x":0.0035936184635302878,"_y":0.05344558377615608,"_z":-0.000609384411624997},"scaling":{"_isDirty":true,"_x":2.1412213728960907,"_y":0.9999997881776371,"_z":1.0810924383157778}},{"meshData":null,"position":{"_isDirty":true,"_x":-15.971122741699219,"_y":11.467076301574707,"_z":-17.63582992553711},"rotation":{"_isDirty":true,"_x":1.5585219927942906,"_y":1.7257903153729452,"_z":1.6323035281602751},"scaling":{"_isDirty":true,"_x":2.497127217631447,"_y":9.62518429519356,"_z":10.39523420108093}},{"meshData":null,"position":{"_isDirty":true,"_x":-15.839576721191406,"_y":12.912481307983398,"_z":-18.719635009765625},"rotation":{"_isDirty":true,"_x":-1.4804676070682694,"_y":0.7711270408517645,"_z":-0.6524442060150839},"scaling":{"_isDirty":true,"_x":3.013897186765527,"_y":86.1183128242604,"_z":1.0000017627740998}},{"meshData":null,"position":{"_isDirty":true,"_x":-16.388690948486328,"_y":12.467228889465332,"_z":-25.789077758789062},"rotation":{"_isDirty":true,"_x":0.03359091399872013,"_y":1.5715091647741246,"_z":-0.03497988840417604},"scaling":{"_isDirty":true,"_x":13.359845116398017,"_y":1.0000001665974436,"_z":1.000000277271994}}];
+
+      function createCollisionMeshes() {
+        collisionMeshesData.forEach((data, index) => {
+          const mesh = BABYLON.MeshBuilder.CreatePlane(
+            `collisionMesh-${index}`,
+            { size: 3 },
+            scene
+          );
+          mesh.position = new BABYLON.Vector3(
+            data.position._x,
+            data.position._y,
+            data.position._z
+          );
+          mesh.rotation = new BABYLON.Vector3(
+            data.rotation._x,
+            data.rotation._y,
+            data.rotation._z
+          );
+          mesh.scaling = new BABYLON.Vector3(
+            data.scaling._x,
+            data.scaling._y,
+            data.scaling._z
+          );
+          mesh.checkCollisions = true;
+          mesh.isVisible = false;
+        });
+      }
+
+      createCollisionMeshes();
+
+      let isMuted = false;
+      const activeSounds = {};
+
+      function playAudio(interactionData, waypointIndex) {
+        if (isMuted) return;
+
+        const id = interactionData.id;
+        const url = interactionData.url;
+        const data = interactionData;
+
+        if (activeSounds[id] && activeSounds[id].isPlaying) {
+          return;
+        }
+
+        if (activeSounds[id]) {
+          if (!activeSounds[id].isPlaying) {
+            activeSounds[id].play();
+          }
+        } else {
+          const sound = new BABYLON.Sound(
+            id,
+            url,
+            scene,
+            () => {
+              sound.play();
+            },
+            {
+              loop: data.loop !== undefined ? data.loop : true,
+              volume: data.volume !== undefined ? data.volume : 1,
+              spatialSound:
+                data.spatialSound !== undefined ? data.spatialSound : false,
+              distanceModel:
+                data.distanceModel !== undefined
+                  ? data.distanceModel
+                  : "exponential",
+              maxDistance:
+                data.maxDistance !== undefined ? data.maxDistance : 100,
+              refDistance:
+                data.refDistance !== undefined ? data.refDistance : 1,
+              rolloffFactor:
+                data.rolloffFactor !== undefined ? data.rolloffFactor : 1,
+            }
+          );
+
+          activeSounds[id] = sound;
+
+          if (data.spatialSound) {
+            let position =
+              waypointIndex !== undefined && waypoints[waypointIndex]
+                ? new BABYLON.Vector3(
+                    waypoints[waypointIndex].x,
+                    waypoints[waypointIndex].y,
+                    waypoints[waypointIndex].z
+                  )
+                : new BABYLON.Vector3(0, 0, 0);
+            sound.setPosition(position);
+          }
+        }
+      }
+
+      function stopAudio(interactionData) {
+        const id = interactionData.id;
+        const sound = activeSounds[id];
+        if (sound && sound.isPlaying) {
+          sound.stop();
+        }
+        delete activeSounds[id];
+      }
+
+      const executeInteractions = (interactions, waypointIndex) => {
+        interactions.forEach((interaction) => {
+          switch (interaction.type) {
+            case "audio":
+              playAudio(
+                { ...interaction.data, id: interaction.id },
+                waypointIndex
+              );
+              break;
+            case "info":
+              showInfoPopup(interaction.data.text);
+              break;
+          }
+        });
+      };
+
+      const reverseInteractions = (interactions) => {
+        interactions.forEach((interaction) => {
+          switch (interaction.type) {
+            case "audio":
+              const data = interaction.data;
+              if (!data.spatialSound && data.stopOnExit) {
+                stopAudio({ ...data, id: interaction.id });
+              }
+              break;
+            case "info":
+              hideInfoPopup();
+              break;
+          }
+        });
+      };
+
+      let transitionSpeed = 0.5;
+
+      function updateTransitionSpeed(value) {
+        transitionSpeed = parseFloat(value);
+      }
+
+      function showInfoPopup(text) {
+        const infoPopup = document.getElementById("infoPopup");
+        infoPopup.innerHTML = `
+        <p>${text}</p>
+        <button onclick="hideInfoPopup()" style="width: 100%; padding: 10px; background-color: #4CAF50; border: none; color: white; cursor: pointer; border-radius: 5px;">Close</button>
+      `;
+        infoPopup.style.display = "block";
+      }
+
+      function hideInfoPopup() {
+        const infoPopup = document.getElementById("infoPopup");
+        infoPopup.style.display = "none";
+      }
+
+      const scrollButtonMode = "percentage";
+      const scrollAmount = 10;
+
+      function handleButtonScroll(direction) {
+        if (cameraMode === "explore") return;
+        if (scrollButtonMode === "percentage") {
+          adjustScroll((direction * scrollAmount) / 100);
+        }
+      }
+
+      let isPlaying = true;
+      const playPauseButton = document.querySelector(".play_btn");
+
+      const pauseSVG = `<rect class="c" x="0.5" width="52" height="52" rx="26" fill="#222222" />
+                    <rect class="d" x="20.5" y="14" width="4.4" height="23.76" rx="0.88" fill="white" />
+                    <rect class="d" x="28.9" y="14" width="4.4" height="23.76" rx="0.88" fill="white" />`;
+
+      const playSVG = `<rect x="0.5" width="52" height="52" rx="26" fill="#222222"/>
+                    <path d="M39.36 24.4758C40.5333 25.1532 40.5333 26.8468 39.36 27.5242L22.14 37.4662C20.9667 38.1436 19.5 37.2968 19.5 35.942V16.058C19.5 14.7032 20.9667 13.8564 22.14 14.5338L39.36 24.4758Z" fill="white"/>`;
+
+      function togglePlayPause() {
+        userControl = !userControl;
+        autoPlayEnabled = !userControl;
+        playPauseButton.innerHTML = !userControl ? pauseSVG : playSVG;
+        updateScrollControlsVisibility();
+      }
+
+      function togglePlayPauseIcon() {
+        playPauseButton.innerHTML =
+          !userControl && autoPlayEnabled ? pauseSVG : playSVG;
+      }
+
+      document.getElementById("renderCanvas").onclick = function () {
+        togglePlayPauseIcon();
+      };
+
+      function adjustScroll(amount) {
+        const pathLength = path.length;
+        if (pathLength > 1) {
+          const scrollIncrement = (pathLength - 1) * amount;
+          scrollTarget += scrollIncrement;
+          if (scrollTarget < 0) scrollTarget = 0;
+          if (scrollTarget > path.length - 1) scrollTarget = path.length - 1;
+          userControl = false;
+          autoPlayEnabled = true;
+          togglePlayPauseIcon();
+        }
+      }
+
+      function createWaypointButtons() {
+        const waypointControls = document.getElementById("waypointControls");
+        const waypointNames = {
+          0: "FLIGHT DECK",
+          1: "NAKED F77",
+          2: "ACCESSORIES",
+          3: "UV AIRSPACE",
+          4: "FULL VIEW",
+        };
+
+        [0, 1, 2, 3, 4].forEach((index) => {
+          if (waypoints[index]) {
+            const button = document.createElement("button");
+            let buttonName = waypointNames[index];
+
+            button.textContent = buttonName;
+            button.className = `waypoint-button ${buttonName
+              .toLowerCase()
+              .replace(" ", "-")}`;
+            button.addEventListener("click", () => {
+              // Remove active class from the previously clicked button
+              if (lastClickedButton && lastClickedButton !== button) {
+                lastClickedButton.classList.remove("active");
+              }
+              // Add active class to the current button
+              button.classList.add("active");
+              lastClickedButton = button; // Update the last clicked button
+              moveToSpecificWaypoint(index);
+              updateWaypointText(buttonName); // Update text when button is clicked
+            });
+            waypointControls.appendChild(button);
+          }
+        });
+      }
+
+      function moveToSpecificWaypoint(waypointIndex) {
+        if (animatingToPath) return; // Prevent multiple animations
+
+        userControl = false;
+        autoPlayEnabled = false; // Pause autoplay during animation
+        animatingToPath = true;
+
+        const subdivisionsPerSegment = 20;
+        const targetScrollPosition = waypointIndex * subdivisionsPerSegment;
+        const currentWaypointIndex = Math.round(
+          scrollPosition / subdivisionsPerSegment
+        );
+        const startScrollPosition =
+          currentWaypointIndex * subdivisionsPerSegment;
+
+        // Ensure camera has a quaternion
+        if (!camera.rotationQuaternion) {
+          camera.rotationQuaternion = BABYLON.Quaternion.FromEulerAngles(
+            camera.rotation.x,
+            camera.rotation.y,
+            camera.rotation.z
+          ).normalize();
+          camera.rotation.set(0, 0, 0);
+        }
+
+        // Define animation duration based on distance (adjustable)
+        const distance = Math.abs(targetScrollPosition - scrollPosition);
+        const frameRate = 60;
+        const durationInFrames = Math.max(60, Math.min(240, distance * 2)); // Between 1-4 seconds
+
+        // Position animation
+        const positionAnimation = new BABYLON.Animation(
+          "waypointPositionAnimation",
+          "position",
+          frameRate,
+          BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+        );
+
+        const startPosition = camera.position.clone();
+        const targetPosition = new BABYLON.Vector3(
+          waypoints[waypointIndex].x,
+          waypoints[waypointIndex].y,
+          waypoints[waypointIndex].z
+        );
+
+        positionAnimation.setKeys([
+          { frame: 0, value: startPosition },
+          { frame: durationInFrames, value: targetPosition },
+        ]);
+
+        const easingFunction = new BABYLON.CubicEase();
+        easingFunction.setEasingMode(
+          BABYLON.EasingFunction.EASINGMODE_EASEINOUT
+        );
+        positionAnimation.setEasingFunction(easingFunction);
+
+        // Rotation animation
+        const rotationAnimation = new BABYLON.Animation(
+          "waypointRotationAnimation",
+          "rotationQuaternion",
+          frameRate,
+          BABYLON.Animation.ANIMATIONTYPE_QUATERNION,
+          BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+        );
+
+        const startRotation = camera.rotationQuaternion.clone();
+        const targetRotation = rotations[waypointIndex].clone();
+
+        rotationAnimation.setKeys([
+          { frame: 0, value: startRotation },
+          { frame: durationInFrames, value: targetRotation },
+        ]);
+        rotationAnimation.setEasingFunction(easingFunction);
+
+        // Apply animations
+        camera.animations = [positionAnimation, rotationAnimation];
+        scene.beginAnimation(camera, 0, durationInFrames, false, 1, () => {
+          // Update scrollPosition and scrollTarget after animation
+          scrollPosition = targetScrollPosition;
+          scrollTarget = targetScrollPosition;
+
+          // Trigger interactions
+          const wp = waypoints[waypointIndex];
+          const distance = BABYLON.Vector3.Distance(
+            camera.position,
+            new BABYLON.Vector3(wp.x, wp.y, wp.z)
+          );
+          if (distance <= (wp.triggerDistance ?? 1.0)) {
+            if (!activeWaypoints.has(waypointIndex)) {
+              activeWaypoints.add(waypointIndex);
+              executeInteractions(wp.interactions, waypointIndex);
+            }
+          }
+
+          // Switch to manual (explore) mode and enable user control
+          cameraMode = "explore";
+          userControl = true;
+          if (BABYLON.VirtualJoystick.Canvas) {
+            BABYLON.VirtualJoystick.Canvas.style.zIndex = "10";
+          }
+
+          animatingToPath = false;
+          togglePlayPauseIcon(); // Show paused state
+          updateScrollControlsVisibility(); // Update UI
+        });
+      }
+
+      // Function to update the text at the bottom center with brackets based on the clicked button
+      const waypointText = document.getElementById("waypointText");
+      function updateWaypointText(buttonName) {
+        let text = "";
+        switch (buttonName) {
+          case "FLIGHT DECK":
+            text =
+              "THE FLIGHTDECK TURNTABLE - THE FOCAL POINT IN EVERY ULTRAVIOLETTE SPACESTATION";
+            break;
+          case "NAKED F77":
+            text =
+              "ASIA’S LARGEST BATTERY PACK WORLD’S HIGHEST BATTERY & POWERTRAIN WARRANTY OF 8,00,000 KM, UPTO 8 YRS";
+            break;
+          case "ACCESSORIES":
+            text =
+              "PANNIERS, TOPBOX, AERO DISC, LEVER GUARDS, TANK GRIPS & MORE TO KEEP OUR CUSTOMERS RACE & TOURING-READY";
+            break;
+          case "UV AIRSPACE":
+            text = "TECH-ENABLED LIFESTYLE & MERCHANDISE";
+            break;
+          case "FULL VIEW":
+            text =
+              "EVERY UV SPACESTATION, DESIGNED TO REFLECT OUR AVIATION DNA & INSPIRE CUSTOMERS TO STEP INTO THE FUTURE";
+            break;
+        }
+        // Update the HTML to include brackets (using Openbracket.svg for open and Closebracket.svg for close)
+        waypointText.innerHTML = `
+        <img src="Openbracket.svg" alt="Open Bracket" />
+        <span class="text-content">${text}</span>
+        <img src="Closebracket.svg" alt="Close Bracket" />
+      `;
+      }
+
+      // Reset View function (to be implemented later)
+      function resetView() {
+        // Logic for resetting the view will be added later
+      }
+
+      // Exit function to refresh the page
+      function exitExperience() {
+        window.location.reload();
+      }
+
+      // Add event listeners for the buttons
+      document
+        .getElementById("resetViewButton")
+        .addEventListener("click", resetView);
+      document
+        .getElementById("exitButton")
+        .addEventListener("click", exitExperience);
+
+      window.addEventListener("wheel", (event) => {
+        if (animatingToPath) return;
+
+        if (
+          (cameraMode === "auto" && userControl) ||
+          (cameraMode === "tour" && userControl)
+        ) {
+          animatingToPath = true;
+          userControl = false;
+
+          if (!camera.rotationQuaternion) {
+            camera.rotationQuaternion = BABYLON.Quaternion.FromEulerAngles(
+              camera.rotation.x,
+              camera.rotation.y,
+              camera.rotation.z
+            ).normalize();
+            camera.rotation.set(0, 0, 0);
+          }
+
+          const targetT = scrollPosition;
+          const pathLength = path.length - 1;
+
+          const floorIndex = Math.floor(targetT);
+          const ceilIndex = Math.min(floorIndex + 1, pathLength);
+          const lerpFactor = targetT - floorIndex;
+
+          const targetPosition = BABYLON.Vector3.Lerp(
+            path[floorIndex],
+            path[ceilIndex],
+            lerpFactor
+          );
+
+          let targetRotation = camera.rotationQuaternion.clone();
+          if (rotations.length >= 2 && path.length >= 2) {
+            const totalSegments = waypoints.length - 1;
+            const segmentT = (targetT / pathLength) * totalSegments;
+            const segmentIndex = Math.floor(segmentT);
+            const clampedSegmentIndex = Math.min(
+              segmentIndex,
+              totalSegments - 1
+            );
+            const lerpFactorRot = segmentT - clampedSegmentIndex;
+
+            const r1 = rotations[clampedSegmentIndex];
+            const nextIndex = (clampedSegmentIndex + 1) % rotations.length;
+            const r2 = rotations[nextIndex];
+            targetRotation = BABYLON.Quaternion.Slerp(
+              r1,
+              r2,
+              lerpFactorRot
+            ).normalize();
+          } else if (rotations.length === 1) {
+            targetRotation = rotations[0];
+          }
+
+          const positionAnimation = new BABYLON.Animation(
+            "cameraPositionAnimation",
+            "position",
+            60,
+            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+          );
+
+          const positionKeys = [];
+          positionKeys.push({ frame: 0, value: camera.position.clone() });
+          positionKeys.push({ frame: 120, value: targetPosition.clone() });
+
+          positionAnimation.setKeys(positionKeys);
+
+          const easingFunction = new BABYLON.CubicEase();
+          easingFunction.setEasingMode(
+            BABYLON.EasingFunction.EASINGMODE_EASEINOUT
+          );
+          positionAnimation.setEasingFunction(easingFunction);
+
+          const rotationAnimation = new BABYLON.Animation(
+            "cameraRotationAnimation",
+            "rotationQuaternion",
+            60,
+            BABYLON.Animation.ANIMATIONTYPE_QUATERNION,
+            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+          );
+
+          const currentRotation = camera.rotationQuaternion.clone();
+          rotationAnimation.setKeys([
+            { frame: 0, value: currentRotation },
+            { frame: 120, value: targetRotation },
+          ]);
+
+          rotationAnimation.setEasingFunction(easingFunction);
+
+          camera.animations = [];
+          camera.animations.push(positionAnimation);
+          camera.animations.push(rotationAnimation);
+
+          scene.beginAnimation(camera, 0, 120, false, 1, function () {
+            animatingToPath = false;
+            scrollPosition = targetT;
+            scrollTarget = targetT;
+          });
+        } else if (cameraMode !== "explore") {
+          scrollTarget += event.deltaY * 0.1;
+          if (scrollTarget < 0) scrollTarget = 0;
+          if (scrollTarget > path.length - 1) scrollTarget = path.length - 1;
+          autoPlayEnabled = true;
+          togglePlayPauseIcon();
+        }
+      });
+
+      let targetRotation = camera.rotationQuaternion.clone();
+      let targetPosition = camera.position.clone();
+
+      const activeWaypoints = new Set();
+
+      if (false) {
+        const ground = BABYLON.MeshBuilder.CreateGround(
+          "ground",
+          { width: 100, height: 100 },
+          scene
+        );
+        ground.isVisible = false;
+        const xr = scene.createDefaultXRExperienceAsync({
+          floorMeshes: [ground],
+        });
+      }
+
+      BABYLON.SceneLoader.ImportMeshAsync(
+        "",
+        "",
+        "https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/assets/data/sportsbar_fly/splat_position.splat",
+        scene
+      )
+        .then((result) => {
+          const loadedMeshes = result.meshes;
+          loadedMeshes.forEach((mesh) => {
+            if (mesh instanceof BABYLON.Mesh) {
+              mesh.position = BABYLON.Vector3.Zero();
+            }
+          });
+          preloader.classList.add("hidden");
+          createWaypointButtons();
+        })
+        .catch((error) => {
+          console.error("Error loading model file:", error);
+          alert("Error loading model file: " + error.message);
+          preloader.classList.add("hidden");
+          createWaypointButtons();
+        });
+
+      engine.runRenderLoop(function () {
+        const scrollInterpolationSpeed = 0.01 + transitionSpeed * 0.1;
+        if (autoPlayEnabled && !userControl && !animatingToPath) {
+          scrollTarget += autoPlaySpeed;
+        }
+        scrollPosition +=
+          (scrollTarget - scrollPosition) * scrollInterpolationSpeed;
+
+        if (loopMode) {
+          if (scrollPosition >= path.length - 1.1) {
+            scrollPosition = 0.2;
+            scrollTarget = 0.2;
+          } else if (scrollPosition <= 0.1) {
+            scrollPosition = path.length - 1.11;
+            scrollTarget = path.length - 1.11;
+          }
+        }
+
+        scrollPosition = Math.max(0, Math.min(scrollPosition, path.length - 1));
+
+        const subdivisionsPerSegment = 20;
+        const waypointTolerance = 0.1;
+        waypoints.forEach((wp, index) => {
+          const waypointPosition = index * subdivisionsPerSegment;
+          if (
+            Math.abs(scrollPosition - waypointPosition) <= waypointTolerance &&
+            autoPlayEnabled &&
+            !userControl &&
+            !animatingToPath
+          ) {
+            autoPlayEnabled = false;
+            scrollTarget = waypointPosition;
+            scrollPosition = waypointPosition;
+            togglePlayPauseIcon();
+          }
+        });
+
+        if (
+          (cameraMode === "auto" && !userControl) ||
+          (cameraMode === "tour" && userControl)
+        ) {
+          if (!animatingToPath) {
+            const t = scrollPosition / (path.length - 1 || 1);
+
+            const totalSegments = waypoints.length - 1;
+            if (totalSegments >= 1) {
+              const segmentT = t * totalSegments;
+              const segmentIndex = Math.floor(segmentT);
+              const clampedSegmentIndex = Math.min(
+                segmentIndex,
+                totalSegments - 1
+              );
+              const lerpFactor = segmentT - clampedSegmentIndex;
+
+              const r1 = rotations[clampedSegmentIndex];
+              const nextIndex = (clampedSegmentIndex + 1) % rotations.length;
+              const r2 = rotations[nextIndex];
+              targetRotation = BABYLON.Quaternion.Slerp(
+                r1,
+                r2,
+                lerpFactor
+              ).normalize();
+
+              const floorIndex = Math.floor(scrollPosition);
+              const ceilIndex = Math.min(floorIndex + 1, path.length - 1);
+              const lerpFactorPos = scrollPosition - floorIndex;
+
+              const interpolatedPosition = BABYLON.Vector3.Lerp(
+                path[floorIndex],
+                path[ceilIndex],
+                lerpFactorPos
+              );
+
+              targetPosition = interpolatedPosition;
+            } else if (rotations.length === 1) {
+              targetRotation = rotations[0].clone();
+              targetPosition = path[0].clone();
+            }
+
+            if (camera.rotationQuaternion) {
+              camera.rotationQuaternion = BABYLON.Quaternion.Slerp(
+                camera.rotationQuaternion,
+                targetRotation,
+                0.05
+              ).normalize();
+            }
+
+            const positionDampingFactor = 0.1;
+            camera.position = BABYLON.Vector3.Lerp(
+              camera.position,
+              targetPosition,
+              positionDampingFactor
+            );
+          }
+
+          waypoints.forEach((wp, index) => {
+            const distance = BABYLON.Vector3.Distance(
+              camera.position,
+              new BABYLON.Vector3(wp.x, wp.y, wp.z)
+            );
+            const triggerDistance = wp.triggerDistance ?? 1.0;
+
+            if (distance <= triggerDistance) {
+              if (!activeWaypoints.has(index)) {
+                activeWaypoints.add(index);
+                executeInteractions(wp.interactions, index);
+              }
+            } else {
+              if (activeWaypoints.has(index)) {
+                activeWaypoints.delete(index);
+                reverseInteractions(wp.interactions);
+              }
+            }
+          });
+        }
+
+        scene.render();
+      });
+
+      scene.onPointerObservable.add(function (evt) {
+        if (evt.type === BABYLON.PointerEventTypes.POINTERDOWN) {
+          if (cameraMode === "explore" || cameraMode === "auto") {
+            userControl = true;
+          } else {
+            userControl = false;
+          }
+        }
+      });
+
+      window.addEventListener("keydown", function () {
+        if (cameraMode === "explore" || cameraMode === "auto") {
+          userControl = true;
+        } else {
+          userControl = false;
+        }
+      });
+
+      const muteButton = document.getElementById("muteButton");
+      muteButton.textContent = isMuted ? "🔇 Unmute" : "🔊 Mute";
+      muteButton.addEventListener("click", function () {
+        isMuted = !isMuted;
+        muteButton.textContent = isMuted ? "🔇 Unmute" : "🔊 Mute";
+
+        if (isMuted) {
+          Object.values(activeSounds).forEach((sound) => {
+            if (sound.isPlaying) {
+              sound.pause();
+            }
+          });
+        } else {
+          Object.values(activeSounds).forEach((sound) => {
+            if (!sound.isPlaying) {
+              sound.play();
+            }
+          });
+        }
+      });
+
+      document
+        .getElementById("startButton")
+        .addEventListener("click", function () {
+          document.getElementById("startButtonContainer").style.display =
+            "none";
+          if (BABYLON.Engine.audioEngine.audioContext.state === "suspended") {
+            BABYLON.Engine.audioEngine.audioContext.resume();
+          }
+
+          waypoints.forEach((wp, index) => {
+            wp.interactions.forEach((interaction) => {
+              if (interaction.type === "audio" && interaction.data.autoplay) {
+                playAudio({ ...interaction.data, id: interaction.id }, index);
+              }
+            });
+          });
+        });
+
+      window.addEventListener("resize", function () {
+        engine.resize();
+      });
+    </script>
+  </body>
+</html>
