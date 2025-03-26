@@ -853,37 +853,90 @@
       let scrollTarget = 0.01;
 
       const waypoints = [
-        {
-          "x":-16.40778679629845,"y":13.242923835218182,"z":-26.09061645746769,"rotation":{"_isDirty":true,"_x":0.12464492881938612,"_y":-0.1449511357427106,"_z":0.018410155418658987,"_w":0.9813836605009111},
-          interactions: [],
-          triggerDistance: 1,
-          name: "FLIGHT DECK",
-        }, // Index 0
-        {
-          "x":-12.51397434047653,"y":12.922762854527306,"z":-15.432586071434518,"rotation":{"_isDirty":true,"_x":0.06042590927535399,"_y":-0.7844112607744402,"_z":0.07739592676402497,"_w":0.6124194157878652},
-          interactions: [],
-          triggerDistance: 2,
-          name: "NAKED F77",
-        }, // Index 1
-        {
-          "x":-17.156559897936287,"y":13.055113678967775,"z":-13.95781851465115,"rotation":{"_isDirty":true,"_x":0.041922056000052665,"_y":0.9415567443980665,"_z":-0.12780997457745563,"_w":0.30883339426247025},
-          interactions: [],
-          triggerDistance: 1,
-          name: "ACCESSORIES",
-        }, // Index 2
-        {
-          "x":-17.24359026227006,"y":12.688563441163897,"z":-19.312396344965165,"rotation":{"_isDirty":true,"_x":0.03481326891667843,"_y":0.9284143385410408,"_z":-0.09008762414710743,"_w":0.358774390891512},
-          interactions: [],
-          triggerDistance: 2,
-          name: "UV AIRSPACE",
-        }, // Index 3
-        {
-          "x":-17.957389014201038,"y":12.836333685310764,"z":-25.841402614839083,"rotation":{"_isDirty":true,"_x":0.0864360348055379,"_y":0.4618903939344021,"_z":-0.04528824473439922,"_w":0.8815526412174601},          
-          interactions: [],
-          triggerDistance: 1,
-          name: "FULL VIEW",
-        }, // Index 4
-      ];
+  {
+    "x": -16.40778679629845,
+    "y": 13.242923835218182,
+    "z": -26.09061645746769,
+    "rotation": {
+      "_isDirty": true,
+      "_x": 0.12464492881938612,
+      "_y": -0.1449511357427106,
+      "_z": 0.018410155418658987,
+      "_w": 0.9813836605009111
+    },
+    "interactions": [],
+    "triggerDistance": 1,
+    "name": "FLIGHT DECK"
+  }, // Index 0
+  {
+    "x": -12.51397434047653,
+    "y": 12.922762854527306,
+    "z": -15.432586071434518,
+    "rotation": {
+      "_isDirty": true,
+      "_x": 0.06042590927535399,
+      "_y": -0.7844112607744402,
+      "_z": 0.07739592676402497,
+      "_w": 0.6124194157878652
+    },
+    "interactions": [
+      {
+        "id": "interaction-1742898909865",
+        "type": "audio",
+        "data": {
+          "url": "https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/assets/data/GingerSportsBarHotspots/gingeraudio_0.mp3"
+        }
+      }
+    ],
+    "triggerDistance": 2,
+    "name": "NAKED F77"
+  }, // Index 1 (Updated with audio interactions)
+  {
+    "x": -17.156559897936287,
+    "y": 13.055113678967775,
+    "z": -13.95781851465115,
+    "rotation": {
+      "_isDirty": true,
+      "_x": 0.041922056000052665,
+      "_y": 0.9415567443980665,
+      "_z": -0.12780997457745563,
+      "_w": 0.30883339426247025
+    },
+    "interactions": [],
+    "triggerDistance": 1,
+    "name": "ACCESSORIES"
+  }, // Index 2
+  {
+    "x": -17.24359026227006,
+    "y": 12.688563441163897,
+    "z": -19.312396344965165,
+    "rotation": {
+      "_isDirty": true,
+      "_x": 0.03481326891667843,
+      "_y": 0.9284143385410408,
+      "_z": -0.09008762414710743,
+      "_w": 0.358774390891512
+    },
+    "interactions": [],
+    "triggerDistance": 2,
+    "name": "UV AIRSPACE"
+  }, // Index 3
+  {
+    "x": -17.957389014201038,
+    "y": 12.836333685310764,
+    "z": -25.841402614839083,
+    "rotation": {
+      "_isDirty": true,
+      "_x": 0.0864360348055379,
+      "_y": 0.4618903939344021,
+      "_z": -0.04528824473439922,
+      "_w": 0.8815526412174601
+    },
+    "interactions": [],
+    "triggerDistance": 1,
+    "name": "FULL VIEW"
+  } // Index 4
+];
       const controlPoints = waypoints.map(
         (wp) => new BABYLON.Vector3(wp.x, wp.y, wp.z)
       );
