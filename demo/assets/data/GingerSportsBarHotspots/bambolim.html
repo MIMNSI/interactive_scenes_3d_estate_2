@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Exported Scene</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <style>
+    /* Core Styles */
+    body, html { margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; font-family: Arial, sans-serif; }
+    #renderCanvas { width: 100%; height: 100%; touch-action: none; }
+
+    /* UI Overlay */
+    .ui-overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 10px;
+      color: white;
+      z-index: 10;
+      font-size: 14px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Hotspot and Info Popup */
+    #hotspotContent {
+      position: fixed;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1001;
+      max-width: 300px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      display: none;
+      font-size: 14px;
+    }
+    #infoPopup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1002;
+      max-width: 80%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      display: none;
+      font-size: 16px;
+    }
+
+    /* Scroll Controls */
+    #scrollControls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 10px;
+      color: white;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    #scrollControlsContent,
+    #exploreControlsContent {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease-in-out;
+      width: 100%;
+    }
+    #scrollControlsContent.hidden,
+    #exploreControlsContent.hidden {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+    }
+    #exploreControlsContent p {
+      color: white;
+      font-size: 14px;
+      text-align: center;
+      margin: 0;
+    }
+    #scrollPercentage {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    #progressBarContainer {
+      width: 200px;
+      height: 10px;
+      background-color: rgba(255,255,255,0.3);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    #progressBar {
+      width: 0%;
+      height: 100%;
+      background-color: #4CAF50;
+      transition: width 0.3s ease;
+    }
+    #scrollButtons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    #toggleCameraModeContainer {
+      margin-bottom: 10px;
+    }
+
+    /* Buttons */
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .button:hover {
+      background-color: #197c1d;
+    }
+    #toggleCameraMode {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    #toggleCameraMode:hover {
+      background-color: #197c1d;
+    }
+
+    /* Mute Button */
+    #muteButton {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0,0,0,0.7);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    /* Preloader */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1e1e1e;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+      transition: opacity 0.5s ease-out;
+    }
+    #preloader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #preloader h1 {
+      font-size: 48px;
+      color: #ffffff;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+    }
+    #preloader .spinner {
+      width: 25px;
+      height: 25px;
+      border: 5px solid #ffffff;
+      border-top: 5px solid #F76900;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Start Screen */
+    #startButtonContainer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    #startButton {
+      padding: 20px 40px;
+      font-size: 24px;
+      background-color: rgba(255, 255, 255, 0.25);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Waypoint Buttons */
+    #waypointControls {
+      top: 100px;
+      left: 10px;
+    }
+    .waypoint-button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      margin: 2px 0;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .waypoint-button:hover {
+      background-color: #197c1d;
+    }
+
+    /* Waypoint Text Overlay */
+    #waypointText {
+      top: 10px;
+      right: 10px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div id="preloader">
+    <h1>MetaShop AI</h1>
+    <div class="spinner"></div>
+  </div>
+  <!-- Start Screen -->
+  <div id="startButtonContainer">
+    <button id="startButton">Start Experience</button>
+  </div>
+  <canvas id="renderCanvas"></canvas>
+  <!-- Movement Instructions -->
+  <div class="ui-overlay">
+    <p><strong>Controls:</strong></p>
+    <p>• W/A/S/D: Move camera</p>
+    <p>• Q/E: Up and Down</p>
+    <p>• Mouse: Look around</p>
+    <p>• Scroll: Move along path</p>
+  </div>
+  <!-- Hotspot and Info Popup -->
+  <div id="hotspotContent"></div>
+  <div id="infoPopup"></div>
+  <!-- Scroll Controls -->
+  <div id="scrollControls">
+    <div id="toggleCameraModeContainer">
+      <button id="toggleCameraMode" onclick="toggleCameraMode()">Mode: Tour</button>
+    </div>
+    <div id="scrollControlsContent">
+      <div id="scrollPercentage">0%</div>
+      <div id="progressBarContainer">
+        <div id="progressBar"></div>
+      </div>
+      <div id="scrollButtons">
+        <button class="button" onclick="handleButtonScroll(-1)">◀ Prev</button>
+        <button class="button" onclick="handleButtonScroll(1)">Next ▶</button>
+      </div>
+    </div>
+    <div id="exploreControlsContent" class="hidden">
+      <p>Use WASD to move and mouse to look around</p>
+    </div>
+  </div>
+  <!-- Waypoint Controls -->
+  <div id="waypointControls" class="ui-overlay"></div>
+  <!-- Waypoint Text Overlay -->
+  <div id="waypointText" class="ui-overlay"></div>
+  <!-- Mute Button -->
+  <button id="muteButton">🔊 Mute</button>
+
+  <!-- Babylon.js CDN -->
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script>
+    // Initialize variables
+    let cameraMode = 'tour';
+    const allowedCameraModes = ["tour", "explore", "auto"];
+    let userControl = cameraMode === 'explore';
+    let scrollPosition = 0;
+    let scrollTarget = 0.01;
+    let animatingToPath = false;
+
+    // Toggle camera mode
+    function toggleCameraMode() {
+      const currentIndex = allowedCameraModes.indexOf(cameraMode);
+      const nextIndex = (currentIndex + 1) % allowedCameraModes.length;
+      cameraMode = allowedCameraModes[nextIndex];
+      document.getElementById('toggleCameraMode').textContent = `Mode: ${cameraMode.charAt(0).toUpperCase() + cameraMode.slice(1)}`;
+      userControl = cameraMode === 'explore';
+      updateScrollControlsVisibility();
+    }
+
+    // Update scroll controls visibility
+    function updateScrollControlsVisibility() {
+      const scrollControlsContent = document.getElementById('scrollControlsContent');
+      const exploreControlsContent = document.getElementById('exploreControlsContent');
+      if (cameraMode === 'explore') {
+        scrollControlsContent.classList.add('hidden');
+        exploreControlsContent.classList.remove('hidden');
+      } else {
+        scrollControlsContent.classList.remove('hidden');
+        exploreControlsContent.classList.add('hidden');
+      }
+    }
+    updateScrollControlsVisibility();
+
+    // Babylon.js setup
+    const canvas = document.getElementById('renderCanvas');
+    const engine = new BABYLON.Engine(canvas, true);
+    const scene = new BABYLON.Scene(engine);
+    scene.clearColor = BABYLON.Color3.FromHexString('#7D7D7D').toColor4(1);
+
+    // Camera setup
+    const camera = new BABYLON.UniversalCamera(
+      'camera',
+      new BABYLON.Vector3(272.23847327706034, 82.67801549093825, 28.11286188432324),
+      scene
+    );
+    camera.attachControl(canvas, true);
+    camera.speed = 0.59;
+    camera.angularSensibility = 4000;
+    camera.rotationQuaternion = new BABYLON.Quaternion(
+      0.04229977069812682,
+      0.7507477209873431,
+      -0.048301626265982035,
+      0.657461433331131
+    ).normalize();
+    camera.rotation = camera.rotationQuaternion.toEulerAngles();
+    camera.keysUp.push(87); // W
+    camera.keysDown.push(83); // S
+    camera.keysLeft.push(65); // A
+    camera.keysRight.push(68); // D
+    camera.keysUpward.push(81); // Q
+    camera.keysDownward.push(69); // E
+    camera.checkCollisions = true;
+    camera.ellipsoid = new BABYLON.Vector3(0.1, 0.1, 0.1);
+
+    // Lighting
+    new BABYLON.HemisphericLight('light', new BABYLON.Vector3(0, 1, 0), scene);
+
+    // Waypoints from exported_scene-18.html
+    const waypoints = [
+      {"x":272.23847327706034,"y":82.67801549093825,"z":28.11286188432324,"rotation":{"_isDirty":true,"_x":0.04229977069812682,"_y":0.7507477209873431,"_z":-0.048301626265982035,"_w":0.657461433331131},"interactions":[],"triggerDistance":1},
+      {"x":277.5523351870783,"y":82.64492639211774,"z":26.23833591663314,"rotation":{"_isDirty":true,"_x":-0.009412466256469352,"_y":0.5474347026569465,"_z":0.00615783723070035,"_w":0.8367728088539522},"interactions":[],"triggerDistance":1},
+      {"x":280.8353919025024,"y":83.35895324353889,"z":24.98279824753554,"rotation":{"_isDirty":true,"_x":0.11633232339131279,"_y":-0.11999799129077578,"_z":0.014160253484920587,"_w":0.9858330267736153},"interactions":[],"triggerDistance":1},
+      {"x":279.3959181413099,"y":83.4223851895643,"z":26.485508857300417,"rotation":{"_isDirty":true,"_x":0.13526777692889141,"_y":0.4340887670142479,"_z":-0.0661092302159897,"_w":0.8881999512896818},"interactions":[],"triggerDistance":1},
+      {"x":-38.04426864902013,"y":27.602347098534604,"z":-17.454242503354603,"rotation":{"_isDirty":true,"_x":0.09714855996326477,"_y":-0.42019933319671243,"_z":0.0453032292391598,"_w":0.9010784062666232},"interactions":[],"triggerDistance":1},
+      {"x":-39.33113247894038,"y":27.30591342259637,"z":-16.804383932488783,"rotation":{"_isDirty":true,"_x":0.10741737205296266,"_y":-0.2984663475369243,"_z":0.03382788974892701,"_w":0.9477526091341225},"interactions":[],"triggerDistance":1},
+      {"x":-40.026928095794325,"y":27.305913423071225,"z":-17.4135687145979,"rotation":{"_isDirty":true,"_x":0.11094036517982352,"_y":-0.15108537689048826,"_z":0.017066490336188733,"_w":0.982127378700952},"interactions":[],"triggerDistance":1},
+      {"x":-36.131104208635016,"y":28.20342322924873,"z":-19.285241189751897,"rotation":{"_isDirty":true,"_x":0.13992467717914878,"_y":-0.47701436161396576,"_z":0.07723080845712267,"_w":0.8642417345868334},"interactions":[],"triggerDistance":1},
+      {"x":-34.56484298506486,"y":27.532405246414633,"z":-20.657286308692207,"rotation":{"_isDirty":true,"_x":0.10005189629003673,"_y":-0.45857151111301964,"_z":0.05205038447836888,"_w":0.8814717974108196},"interactions":[],"triggerDistance":1},
+      {"x":-346.1869661002572,"y":32.24558598150465,"z":7.197604109121116,"rotation":{"_isDirty":true,"_x":0.6266916128906483,"_y":0.10578355082430381,"_z":-0.0864095175339169,"_w":0.7672032685805581},"interactions":[],"triggerDistance":1},
+      {"x":-347.333444694959,"y":24.870398321453713,"z":13.536651385066998,"rotation":{"_isDirty":true,"_x":0.03918196642140837,"_y":0.919979757767837,"_z":-0.3781754317177357,"_w":0.09531718447202607},"interactions":[],"triggerDistance":1},
+      {"x":-344.1527725983508,"y":24.211083954816065,"z":1.8509126479160547,"rotation":{"_isDirty":true,"_x":0.23859587470772609,"_y":-0.028175610851616812,"_z":0.006925605534534711,"_w":0.9706854175817681},"interactions":[],"triggerDistance":1},
+      {"x":-337.97502078865455,"y":23.57508031823999,"z":5.440517493032775,"rotation":{"_isDirty":true,"_x":0.16248463551760048,"_y":-0.47359352043383357,"_z":0.08937480788472915,"_w":0.8609994576966952},"interactions":[],"triggerDistance":1},
+      {"x":-337.4401875589141,"y":21.987316948659686,"z":6.769487692673447,"rotation":{"_isDirty":true,"_x":0.045830153452795466,"_y":-0.6352406290524935,"_z":0.0378080538026419,"_w":0.7700256560280998},"interactions":[],"triggerDistance":1},
+      {"x":-347.23344329983036,"y":21.879564820116542,"z":5.069919659381107,"rotation":{"_isDirty":true,"_x":0.05208984751293399,"_y":0.38415740735449205,"_z":-0.021714387566196328,"_w":0.9215412182192306},"interactions":[],"triggerDistance":1}
+    ];
+
+    const controlPoints = waypoints.map(wp => new BABYLON.Vector3(wp.x, wp.y, wp.z));
+    const rotations = waypoints.map(wp => new BABYLON.Quaternion(wp.rotation._x, wp.rotation._y, wp.rotation._z, wp.rotation._w).normalize());
+    let path = BABYLON.Curve3.CreateCatmullRomSpline(controlPoints, 20, false).getPoints();
+
+    // Scroll handling
+    function updateScrollUI(percentage) {
+      const scrollPercentage = document.getElementById('scrollPercentage');
+      const progressBar = document.getElementById('progressBar');
+      if (scrollPercentage && progressBar) {
+        scrollPercentage.textContent = `${Math.round(percentage)}%`;
+        progressBar.style.width = `${percentage}%`;
+      }
+    }
+
+    function handleButtonScroll(direction) {
+      if (cameraMode === 'explore') return;
+      const subdivisionsPerSegment = 20;
+      let currentWaypointIndex = Math.round(scrollPosition / subdivisionsPerSegment);
+      let nextWaypointIndex = Math.max(0, Math.min(currentWaypointIndex + direction, waypoints.length - 1));
+      scrollTarget = nextWaypointIndex * subdivisionsPerSegment;
+      userControl = false;
+    }
+
+    window.addEventListener('wheel', (event) => {
+      if (cameraMode !== 'explore' && !animatingToPath) {
+        scrollTarget += event.deltaY * 0.1;
+        scrollTarget = Math.max(0, Math.min(scrollTarget, path.length - 1));
+        userControl = false;
+      }
+    });
+
+    // Load 3D asset from exported_scene-18.html
+    const preloader = document.getElementById('preloader');
+    BABYLON.SceneLoader.ImportMeshAsync('', '', 'https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/assets/data/Bambolim/BambolimAirAnti-2.splat', scene)
+      .then((result) => {
+        result.meshes.forEach(mesh => {
+          if (mesh instanceof BABYLON.Mesh) mesh.position = BABYLON.Vector3.Zero();
+        });
+        preloader.classList.add('hidden');
+      })
+      .catch((error) => {
+        console.error('Error loading model:', error);
+        preloader.classList.add('hidden');
+      });
+
+    // Waypoint buttons
+    function createWaypointButtons() {
+      const waypointControls = document.getElementById("waypointControls");
+      waypoints.forEach((wp, index) => {
+        const button = document.createElement("button");
+        button.textContent = `Waypoint ${index + 1}`;
+        button.className = `waypoint-button waypoint-${index}`;
+        button.addEventListener("click", () => {
+          scrollTarget = index * 20;
+          userControl = false;
+        });
+        waypointControls.appendChild(button);
+      });
+    }
+    createWaypointButtons();
+
+    // Waypoint text overlay
+    function updateWaypointText(index) {
+      const waypointText = document.getElementById("waypointText");
+      const descriptions = [
+        "Description for Waypoint 1",
+        "Description for Waypoint 2",
+        "Description for Waypoint 3",
+        "Description for Waypoint 4",
+        "Description for Waypoint 5",
+        "Description for Waypoint 6",
+        "Description for Waypoint 7",
+        "Description for Waypoint 8",
+        "Description for Waypoint 9",
+        "Description for Waypoint 10",
+        "Description for Waypoint 11",
+        "Description for Waypoint 12",
+        "Description for Waypoint 13",
+        "Description for Waypoint 14",
+        "Description for Waypoint 15"
+      ];
+      waypointText.innerHTML = descriptions[index] || "No description";
+    }
+
+    // Render loop
+    let targetRotation = camera.rotationQuaternion.clone();
+    let targetPosition = camera.position.clone();
+    const activeWaypoints = new Set();
+
+    engine.runRenderLoop(() => {
+      const scrollInterpolationSpeed = 0.1;
+      scrollPosition += (scrollTarget - scrollPosition) * scrollInterpolationSpeed;
+      scrollPosition = Math.max(0, Math.min(scrollPosition, path.length - 1));
+
+      const scrollPercentage = (scrollPosition / (path.length - 1 || 1)) * 100;
+      if (cameraMode !== 'explore') updateScrollUI(scrollPercentage);
+
+      if (cameraMode !== 'explore' && !userControl) {
+        const t = scrollPosition / (path.length - 1 || 1);
+        const totalSegments = waypoints.length - 1;
+        if (totalSegments >= 1) {
+          const segmentT = t * totalSegments;
+          const segmentIndex = Math.floor(segmentT);
+          const clampedSegmentIndex = Math.min(segmentIndex, totalSegments - 1);
+          const lerpFactor = segmentT - clampedSegmentIndex;
+
+          targetRotation = BABYLON.Quaternion.Slerp(
+            rotations[clampedSegmentIndex],
+            rotations[(clampedSegmentIndex + 1) % rotations.length],
+            lerpFactor
+          ).normalize();
+
+          const floorIndex = Math.floor(scrollPosition);
+          const ceilIndex = Math.min(floorIndex + 1, path.length - 1);
+          targetPosition = BABYLON.Vector3.Lerp(path[floorIndex], path[ceilIndex], scrollPosition - floorIndex);
+        } else if (rotations.length === 1) {
+          targetRotation = rotations[0].clone();
+          targetPosition = path[0].clone();
+        }
+
+        camera.rotationQuaternion = BABYLON.Quaternion.Slerp(camera.rotationQuaternion, targetRotation, 0.05).normalize();
+        camera.position = BABYLON.Vector3.Lerp(camera.position, targetPosition, 0.1);
+      }
+
+      // Check proximity to waypoints
+      waypoints.forEach((wp, index) => {
+        const distance = BABYLON.Vector3.Distance(camera.position, new BABYLON.Vector3(wp.x, wp.y, wp.z));
+        if (distance <= wp.triggerDistance) {
+          if (!activeWaypoints.has(index)) {
+            activeWaypoints.add(index);
+            updateWaypointText(index);
+          }
+        } else if (activeWaypoints.has(index)) {
+          activeWaypoints.delete(index);
+          document.getElementById("waypointText").innerHTML = "";
+        }
+      });
+
+      scene.render();
+    });
+
+    // Mute functionality
+    let isMuted = false;
+    const muteButton = document.getElementById('muteButton');
+    muteButton.addEventListener('click', () => {
+      isMuted = !isMuted;
+      muteButton.textContent = isMuted ? '🔇 Unmute' : '🔊 Mute';
+    });
+
+    // Start button
+    document.getElementById('startButton').addEventListener('click', () => {
+      document.getElementById('startButtonContainer').style.display = 'none';
+      if (BABYLON.Engine.audioEngine.audioContext.state === 'suspended') {
+        BABYLON.Engine.audioEngine.audioContext.resume();
+      }
+    });
+
+    // Resize handling
+    window.addEventListener('resize', () => engine.resize());
+  </script>
+</body>
+</html>
