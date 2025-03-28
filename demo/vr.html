@@ -1,50 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>3D Gaussian Splat Demo - VR Garden</title>
-  <script type="text/javascript" src="js/util.js"></script>
-  <script type="importmap">
-    {
-        "imports": {
-            "three": "./lib/three.module.js",
-            "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
-        }
-    }
-  </script>
-  <style>
-
-    body {
-      background-color: #000000;
-      height: 100vh;
-      margin: 0px;
-    }
-
-  </style>
-
-</head>
-
-<body>
-  <script type="module">
-    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
-    import * as THREE from 'three';
-    const viewer = new GaussianSplats3D.Viewer({
-      'initialCameraLookAt': [0.04327, -0.37530, 0],
-      'webXRMode': GaussianSplats3D.WebXRMode.AR
-    });
-    let path = 'assets/data/italicademochair/cropped_yellowchair.ply';
-    viewer.addSplatScene(path, {
-        'rotation': new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0.01933, -0.35830, 0).normalize(), new THREE.Vector3(0, 1, 0)).toArray(),
-        'scale': [1.5, 1.5, 1.5],
-        'position': [0, -1.2, -2]
-    })
-    .then(() => {
-        viewer.start();
-    });
-  </script>
-</body>
-
+  <head>
+    <title>&lt;model-viewer&gt; template</title>
+    <meta charset="utf-8">
+    <meta name="description" content="&lt;model-viewer&gt; template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="./styles.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <!-- <model-viewer> HTML element -->
+    <model-viewer src="phoenix.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls tone-mapping="neutral" poster="poster.webp" shadow-intensity="1">
+      <div class="progress-bar hide" slot="progress-bar">
+          <div class="update-bar"></div>
+      </div>
+      <button slot="ar-button" id="ar-button">
+          View in your space
+      </button>
+      <div id="ar-prompt">
+          <img src="ar_hand_prompt.png">
+      </div>
+    </model-viewer>  
+    <script src="script.js"></script>
+    <!-- Loads <model-viewer> for browsers: -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  </body>
 </html>
