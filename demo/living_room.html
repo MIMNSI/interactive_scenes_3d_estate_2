@@ -68,12 +68,12 @@
   <script type="module">
     import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
     const viewer = new GaussianSplats3D.Viewer({
-        'cameraUp': [0.00000, 1.00000, 0.00000],
-        'initialCameraPosition': [0.52231, 3.53941, -0.66710],
-        'initialCameraLookAt': [2.35916, 2.64203, 0.82958],
-        'sphericalHarmonicsDegree': 2
+        'cameraUp': [-0.00824, 0.01651, 0.99983],
+        'initialCameraPosition': [0.25311, -0.15665, 0.04118],
+        'initialCameraLookAt': [0.20820, 0.50174, -0.15923],
+        'sphericalHarmonicsDegree': 1
     });
-    let path = 'assets/data/living_room/living_room';
+    let path = 'assets/data/living_room/living_room_compressed';
     path += isMobile() ? '.ksplat' : '.ksplat';
     viewer.addSplatScene(path, {
       'streamView': true
