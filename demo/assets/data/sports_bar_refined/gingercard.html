@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ginger Mumbai Airport - Restaurants</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    /* Navigation Bar */
+    .nav-bar {
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-tabs a {
+      text-decoration: none;
+      color: #666;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .nav-tabs a.active {
+      color: #d35400;
+      font-weight: 600;
+    }
+
+    .book-button {
+      background-color: #f39c12;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    /* Page Content */
+    .page-content {
+      max-width: 1900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .section-subheading {
+      font-size: 16px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    /* Restaurant Card */
+    .restaurant-card {
+      display: flex;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin: 0 auto;
+      width: 90%;
+      max-width: 1700px;
+    }
+
+    .card-image {
+      position: relative;
+      flex: 1;
+      min-height: 300px;
+      aspect-ratio: 4 / 3;
+    }
+
+    .card-image iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .featured-label {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #d35400;
+      color: #fff;
+      padding: 5px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 1001;
+    }
+
+    .card-content {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .card-content h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .card-content p {
+      font-family: 'Arial', sans-serif;
+      font-size: 16px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .card-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-label {
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      color: #d35400;
+      margin-bottom: 5px;
+    }
+
+    .detail-value {
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .nav-bar {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-tabs a {
+        font-size: 14px;
+      }
+
+      .book-button {
+        font-size: 14px;
+        padding: 8px 16px;
+      }
+
+      .page-content {
+        padding: 20px 10px;
+      }
+
+      .section-heading {
+        font-size: 28px;
+      }
+
+      .section-subheading {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .restaurant-card {
+        flex-direction: column;
+        width: 100%;
+        margin: 0;
+      }
+
+      .card-image {
+        min-height: 200px;
+        aspect-ratio: 4 / 3;
+      }
+
+      .card-content h2 {
+        font-size: 24px;
+      }
+
+      .card-content p {
+        font-size: 14px;
+      }
+
+      .card-details {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-label,
+      .detail-value {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <div class="nav-bar">
+    <div class="nav-tabs">
+      <a href="#" class="">Overview</a>
+      <a href="#" class="">Rooms</a>
+      <a href="#" class="">Offers</a>
+      <a href="#" class="active">Dining</a>
+      <a href="#" class="">Meetings</a>
+      <a href="#" class="">In & Around</a>
+      <a href="#" class="">Gallery</a>
+      <a href="#" class="">Events</a>
+    </div>
+    <a href="#" class="book-button">Book Your Stay</a>
+  </div>
+
+  <!-- Page Content -->
+  <div class="page-content">
+    <h1 class="section-heading">What’s happening at Ginger?</h1>
+    <p class="section-subheading">
+      Something. Always. Check in as you stay at Ginger Hotels because Ginger is a vibe – a buzzing atmosphere full of energy, new bonds, great food and a lot more.
+    </p>
+
+    <!-- Restaurant Card -->
+    <div class="restaurant-card">
+      <div class="card-image">
+        
+        <iframe src="https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/assets/data/sports_bar_refined/gingersportsbar_loaderimage.html" title="The Sports Bar 3D Viewer"></iframe>
+      </div>
+      <div class="card-content">
+        <h2>The Sports Bar Mumbai Airport</h2>
+        <p>
+          Relax in a spacious 130 sq. mt. bar where you’re expertly crafted with beverages and a vibrant atmosphere to wait for whether catching up with friends or unwinding after a busy day. The Sports Bar promises good times and great vibes.
+        </p>
+        <div class="card-details">
+          <div class="detail-item">
+            <span class="detail-label">TIMINGS</span>
+            <span class="detail-value">11:00am to 01:30am</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">AVERAGE PRICE FOR TWO</span>
+            <span class="detail-value">1200 for Two</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">DRESS CODE</span>
+            <span class="detail-value">Work & Play (Smart & Casual)</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">CONTACT</span>
+            <span class="detail-value">+91 22699 67333</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
