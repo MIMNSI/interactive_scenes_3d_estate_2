@@ -7,18 +7,17 @@
   <style>
     @import url("https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css");
 
-    /* Define the Mulish font with a number of weights */
     @font-face {
       font-family: "Mulish";
       src: url("fonts/Mulish-Medium.otf") format("opentype");
-      font-weight: 500; /* Medium weight */
+      font-weight: 500;
       font-style: normal;
     }
 
     @font-face {
       font-family: "Mulish";
       src: url("fonts/Mulish-SemiBold.otf") format("opentype");
-      font-weight: 700; /* Bold weight */
+      font-weight: 700;
       font-style: normal;
     }
 
@@ -31,7 +30,6 @@
       margin: 0px;
       height: 100%;
     }
-    /* a blue color as a generic focus style */
     button:focus-visible {
       outline: 2px solid #4a90e2 !important;
       outline: -webkit-focus-ring-color auto 5px !important;
@@ -56,7 +54,6 @@
       touch-action: none;
     }
 
-    /* Hide the mode tabs (already hidden, keeping for consistency) */
     #modeTabs {
       display: none;
     }
@@ -122,7 +119,6 @@
       z-index: 1000;
     }
 
-    /* Hide scroll controls */
     #scrollControls {
       display: none;
     }
@@ -141,40 +137,39 @@
     }
 
     #preloader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #1e1e1e;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100000;
-  transition: opacity 0.5s ease-out;
-}
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1e1e1e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100000;
+      transition: opacity 0.5s ease-out;
+    }
 
-#preloader.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
+    #preloader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-.preloader-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Ensure the image covers the preloader area */
-  object-position: center; /* Center the image */
-}
+    .preloader-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
 
-/* Remove spinner styles as they’re no longer needed */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
 
     #startButtonContainer {
       position: absolute;
@@ -231,7 +226,6 @@
       touch-action: none;
     }
 
-    /* Updated gradient container with new gradient and properties */
     .gradient-box {
       position: fixed;
       width: 305px;
@@ -240,18 +234,17 @@
       top: 0;
       left: 0;
       background: linear-gradient(271deg, rgba(0, 0, 0, 0) 0.86%, #000 99.05%);
-      z-index: 999; /* Ensure it's behind the waypoint container but above the canvas */
+      z-index: 999;
     }
 
-    /* Container for waypoint controls and title */
     #waypointContainer {
       position: absolute;
-      top: 50px; /* Adjusted to give space for the title */
+      top: 50px;
       left: 20px;
-      z-index: 1000; /* Ensure it stays above the gradient */
+      z-index: 1000;
       display: flex;
       flex-direction: column;
-      align-items: center; /* Center the title and buttons */
+      align-items: center;
     }
 
     #waypointControls {
@@ -281,87 +274,81 @@
       background: #555;
     }
 
-    /* Title styling */
     #waypointTitle {
       color: #ffffff;
-      font-family: "Mulish"; /* Updated to Mulish */
-      font-weight: 700; /* Bold */
-      font-size: 20px; /* Adjusted to match screenshot */
+      font-family: "Mulish";
+      font-weight: 700;
+      font-size: 20px;
       text-align: center;
-      letter-spacing: 1px; /* Slight letter spacing for better readability */
-      margin-bottom: 20px; /* Increased spacing between title and buttons */
+      letter-spacing: 1px;
+      margin-bottom: 20px;
     }
 
-    /* Updated waypoint button styling to match the screenshot exactly */
     .waypoint-button {
       position: relative;
       height: 53px;
       width: 211px;
       background-size: 100% 100%;
-      background-color: transparent; /* Ensure no background color overlay */
+      background-color: transparent;
       border: none;
       cursor: pointer;
-      font-family: "Mulish"; /* Updated to Mulish */
-      font-weight: 500; /* Medium weight */
+      font-family: "Mulish";
+      font-weight: 500;
       font-size: 13px;
       text-align: center;
       letter-spacing: 0;
       line-height: normal;
       margin-bottom: 10px;
-      padding: 0; /* Remove default padding to ensure SVG fits exactly */
+      padding: 0;
     }
 
-    /* Specific styles for each button's normal state */
     .waypoint-button.baseball-couch {
-      background-image: url("vector-1.svg"); /* Normal state for Baseball Couch */
-      color: #000000; /* Black text */
+      background-image: url("vector-1.svg");
+      color: #000000;
     }
 
     .waypoint-button.memorabilia-wall {
-      background-image: url("vector-2.svg"); /* Normal state for Memorabilia Wall */
-      color: #000000; /* Black text */
+      background-image: url("vector-2.svg");
+      color: #000000;
     }
 
     .waypoint-button.snacks-center {
-      background-image: url("vector-3.svg"); /* Normal state for Snacks Center */
-      color: #000000; /* Black text */
+      background-image: url("vector-3.svg");
+      color: #000000;
     }
 
     .waypoint-button.the-bar {
-      background-image: url("vector-4.svg"); /* Normal state for The Bar */
-      color: #000000; /* Black text */
+      background-image: url("vector-4.svg");
+      color: #000000;
     }
 
     .waypoint-button.seating {
-      background-image: url("vector-5.svg"); /* Normal state for Seating */
-      color: #000000; /* Black text */
+      background-image: url("vector-5.svg");
+      color: #000000;
     }
 
-    /* Active/Selected state for buttons */
     .waypoint-button.active {
-      background-image: url("vector-active.svg") !important; /* Active state for all buttons */
-      background-color: transparent !important; /* Ensure no background color overlay */
+      background-image: url("vector-active.svg") !important;
+      background-color: transparent !important;
       background-size: 100% 100% !important;
-      color: #ffffff !important; /* White text for active state */
+      color: #ffffff !important;
     }
 
-    /* Hover effect: Same as active state */
     .waypoint-button:hover:not(.active) {
-      background-image: url("vector-active.svg") !important; /* Same as active state */
-      background-color: transparent !important; /* Ensure no background color overlay */
+      background-image: url("vector-active.svg") !important;
+      background-color: transparent !important;
       background-size: 100% 100% !important;
-      color: #ffffff !important; /* White text on hover */
+      color: #ffffff !important;
     }
 
-    /* Text at bottom center with brackets */
     .bottom-text {
       position: absolute;
       width: 614px;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-family: "Mulish"; /* Updated to Mulish */
-      font-weight: 500; /* Medium weight */
+      font-family: "Mulish";
+      font-weight: 500;
       color: #ffffff;
       font-size: 20.1px;
       text-align: center;
@@ -376,14 +363,13 @@
     .bottom-text img {
       width: 13px;
       height: 57px;
-      margin: 0 10px; /* Spacing between brackets and text */
+      margin: 0 10px;
     }
 
     .bottom-text .text-content {
       flex: 1;
     }
 
-    /* Container for Reset View and Exit buttons */
     #actionButtons {
       position: absolute;
       bottom: 20px;
@@ -394,49 +380,46 @@
       z-index: 1000;
     }
 
-    /* Apply waypoint-button styling to Reset View and Exit buttons */
     #resetViewButton,
     #exitButton {
       position: relative;
       height: 53px;
       width: 211px;
       background-size: 100% 100%;
-      background-color: transparent; /* Ensure no background color overlay */
+      background-color: transparent;
       border: none;
       cursor: pointer;
-      font-family: "Mulish"; /* Updated to Mulish */
-      font-weight: 500; /* Medium weight */
+      font-family: "Mulish";
+      font-weight: 500;
       font-size: 13px;
       text-align: center;
       letter-spacing: 0;
       line-height: normal;
       margin-bottom: 10px;
-      padding: 0; /* Remove default padding to ensure SVG fits exactly */
+      padding: 0;
     }
 
-    /* Specific styles for Reset View and Exit buttons */
     #resetViewButton {
-      background-image: url("vector-6.svg"); /* Placeholder SVG for RESET VIEW */
-      color: #000000; /* Black text */
+      background-image: url("vector-6.svg");
+      color: #000000;
     }
 
     #exitButton {
-      background-image: url("vector-7.svg"); /* Placeholder SVG for EXIT */
-      color: #000000; /* Black text */
+      background-image: url("vector-7.svg");
+      color: #000000;
     }
 
-    /* Hover effect for Reset View and Exit buttons: Same as active state */
     #resetViewButton:hover:not(.active),
     #exitButton:hover:not(.active) {
-      background-image: url("vector-active.svg") !important; /* Same as active state */
-      background-color: transparent !important; /* Ensure no background color overlay */
+      background-image: url("vector-active.svg") !important;
+      background-color: transparent !important;
       background-size: 100% 100% !important;
-      color: #ffffff !important; /* White text on hover */
+      color: #ffffff !important;
     }
 
     @media only screen and (max-width: 768px) {
       #modeTabs {
-        display: none; /* Hide on mobile as well */
+        display: none;
       }
 
       #modeTabs button,
@@ -446,19 +429,19 @@
       }
 
       .gradient-box {
-        width: 200px; /* Adjust width for mobile */
-        height: 600px; /* Adjust height for mobile */
+        width: 200px;
+        height: 600px;
         flex-shrink: 0;
       }
 
       #waypointContainer {
-        top: 40px; /* Adjusted for mobile */
+        top: 40px;
         left: 5px;
       }
 
       #waypointTitle {
-        font-size: 16px; /* Smaller title for mobile */
-        margin-bottom: 15px; /* Adjusted spacing for mobile */
+        font-size: 16px;
+        margin-bottom: 15px;
       }
 
       #waypointControls {
@@ -474,21 +457,21 @@
 
       .waypoint-button.active {
         background-image: url("vector-active.svg") !important;
-        background-color: transparent !important; /* Ensure no background color overlay */
+        background-color: transparent !important;
         background-size: 100% 100% !important;
         color: #ffffff !important;
       }
 
       .bottom-text {
-        width: 300px; /* Reduced width for mobile */
-        font-size: 16px; /* Smaller text for mobile */
-        bottom: 10px; /* Adjust position for mobile */
+        width: 300px;
+        font-size: 16px;
+        bottom: 10px;
       }
 
       .bottom-text img {
-        width: 10px; /* Reduced size for mobile */
-        height: 40px; /* Reduced size for mobile */
-        margin: 0 5px; /* Reduced spacing for mobile */
+        width: 10px;
+        height: 40px;
+        margin: 0 5px;
       }
 
       #actionButtons {
@@ -522,10 +505,8 @@
     <img src="Closebracket.svg" alt="Close Bracket" />
   </div>
 
-  <!-- Gradient background behind the title and buttons -->
   <div class="gradient-box"></div>
 
-  <!-- Container for the title and waypoint buttons -->
   <div id="waypointContainer">
     <div id="waypointTitle">TAKE A CLOSER LOOK</div>
     <div id="waypointControls"></div>
@@ -533,7 +514,6 @@
 
   <button id="muteButton">🔊 Mute</button>
 
-  <!-- Container for Reset View and Exit buttons -->
   <div id="actionButtons">
     <button id="resetViewButton">RESET VIEW</button>
     <button id="exitButton">EXIT</button>
@@ -542,13 +522,15 @@
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
   <script>
-    let cameraMode = "tour"; // Default to tour mode since mode tabs are hidden
+    let cameraMode = "tour";
     const allowedCameraModes = ["tour", "explore"];
     let loopMode = true;
     let autoPlaySpeed = 0.23;
     let autoPlayEnabled = true;
-    let lastClickedButton = null; // Track the last clicked button to reset its style
+    let lastClickedButton = null;
     let animatingToPath = false;
+    let autoTourActive = false;
+    let currentWaypointIndex = 0;
 
     const preloader = document.getElementById("preloader");
     const canvas = document.getElementById("renderCanvas");
@@ -560,14 +542,13 @@
 
     const camera = new BABYLON.UniversalCamera(
       "camera",
-      new BABYLON.Vector3(-16.40778679629845, 13.242923835218182, -26.09061645746769), // First waypoint position
+      new BABYLON.Vector3(-16.40778679629845, 13.242923835218182, -26.09061645746769),
       scene
     );
     camera.attachControl(canvas, true);
     camera.speed = 0.3;
     camera.angularSensibility = 4000;
 
-    // Set initial rotation to match the first waypoint
     camera.rotationQuaternion = new BABYLON.Quaternion(
       0.12464492881938612,
       -0.1449511357427106,
@@ -576,12 +557,12 @@
     ).normalize();
     camera.rotation = camera.rotationQuaternion.toEulerAngles();
 
-    camera.keysUp.push(87); // W
-    camera.keysDown.push(83); // S
-    camera.keysLeft.push(65); // A
-    camera.keysRight.push(68); // D
-    camera.keysUpward.push(81); // Q
-    camera.keysDownward.push(69); // E
+    camera.keysUp.push(87);
+    camera.keysDown.push(83);
+    camera.keysLeft.push(65);
+    camera.keysRight.push(68);
+    camera.keysUpward.push(81);
+    camera.keysDownward.push(69);
     camera.inputs.addGamepad();
 
     let userControl = cameraMode === "explore";
@@ -606,6 +587,7 @@
       scene.onBeforeRenderObservable.add(() => {
         if (leftJoystick.pressed) {
           userControl = true;
+          autoTourActive = false; // Stop auto tour on joystick use
           const deltaTime = engine.getDeltaTime() / 1000;
           const moveSpeed = deltaTime * 5 * 1.05;
           const moveX = leftJoystick.deltaPosition.x * moveSpeed;
@@ -652,7 +634,7 @@
         "interactions": [],
         "triggerDistance": 1,
         "name": "Baseball Couch"
-      }, // Index 0
+      },
       {
         "x": -12.51397434047653,
         "y": 12.922762854527306,
@@ -675,7 +657,7 @@
         ],
         "triggerDistance": 2,
         "name": "Memorabilia Wall"
-      }, // Index 1
+      },
       {
         "x": -17.156559897936287,
         "y": 13.055113678967775,
@@ -690,7 +672,7 @@
         "interactions": [],
         "triggerDistance": 1,
         "name": "Snacks Center"
-      }, // Index 2
+      },
       {
         "x": -17.24359026227006,
         "y": 12.688563441163897,
@@ -705,13 +687,22 @@
         "interactions": [],
         "triggerDistance": 2,
         "name": "The Bar"
-      }, // Index 3
-      {"x":-17.81228730578222,"y":12.859424524185695,"z":-26.921090099574794,
-      "rotation":{"_isDirty":true,"_x":0.05000847593303947,"_y":0.9039231304547645,"_z":-0.11019446536369007,"_w":0.4102186186979872},
-      "interactions":[],
-      "triggerDistance":1,
+      },
+      {
+        "x": -17.81228730578222,
+        "y": 12.859424524185695,
+        "z": -26.921090099574794,
+        "rotation": {
+          "_isDirty": true,
+          "_x": 0.05000847593303947,
+          "_y": 0.9039231304547645,
+          "_z": -0.11019446536369007,
+          "_w": 0.4102186186979872
+        },
+        "interactions": [],
+        "triggerDistance": 1,
         "name": "Seating"
-      } // Index 4
+      }
     ];
     const controlPoints = waypoints.map((wp) => new BABYLON.Vector3(wp.x, wp.y, wp.z));
     const rotations = waypoints.map((wp) =>
@@ -980,6 +971,7 @@
           button.textContent = buttonName;
           button.className = `waypoint-button ${buttonName.toLowerCase().replace(" ", "-")}`;
           button.addEventListener("click", () => {
+            autoTourActive = false; // Stop auto tour on manual click
             if (lastClickedButton && lastClickedButton !== button) {
               lastClickedButton.classList.remove("active");
             }
@@ -987,6 +979,7 @@
             lastClickedButton = button;
             moveToSpecificWaypoint(index);
             updateWaypointText(buttonName);
+            currentWaypointIndex = index; // Update current index for resuming tour
           });
           waypointControls.appendChild(button);
         }
@@ -1001,7 +994,6 @@
       userControl = false;
       animatingToPath = true;
 
-      // Ensure camera has a quaternion
       if (!camera.rotationQuaternion) {
         camera.rotationQuaternion = BABYLON.Quaternion.FromEulerAngles(
           camera.rotation.x,
@@ -1019,9 +1011,8 @@
       const targetRotation = rotations[waypointIndex].clone();
 
       const frameRate = 60;
-      const durationInFrames = 120; // 2 seconds at 60 FPS
+      const durationInFrames = 120;
 
-      // Position animation
       const positionAnimation = new BABYLON.Animation(
         "waypointPositionAnimation",
         "position",
@@ -1039,7 +1030,6 @@
       easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
       positionAnimation.setEasingFunction(easingFunction);
 
-      // Rotation animation
       const rotationAnimation = new BABYLON.Animation(
         "waypointRotationAnimation",
         "rotationQuaternion",
@@ -1054,7 +1044,6 @@
       ]);
       rotationAnimation.setEasingFunction(easingFunction);
 
-      // Apply animations
       camera.animations = [positionAnimation, rotationAnimation];
       console.log("Starting animation...");
       scene.beginAnimation(camera, 0, durationInFrames, false, 1, () => {
@@ -1072,13 +1061,38 @@
           }
         }
 
-        cameraMode = "explore";
-        userControl = true;
-        if (BABYLON.VirtualJoystick.Canvas) {
-          BABYLON.VirtualJoystick.Canvas.style.zIndex = "10";
-        }
-
         animatingToPath = false;
+
+        // If auto tour is active, schedule the next waypoint
+        if (autoTourActive) {
+          setTimeout(() => {
+            if (autoTourActive) {
+              currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.length;
+              moveToSpecificWaypoint(currentWaypointIndex);
+              updateWaypointButton(currentWaypointIndex);
+              updateWaypointText(waypoints[currentWaypointIndex].name);
+            }
+          }, 5000); // 5-second pause at each waypoint
+        } else {
+          cameraMode = "explore";
+          userControl = true;
+          if (BABYLON.VirtualJoystick.Canvas) {
+            BABYLON.VirtualJoystick.Canvas.style.zIndex = "10";
+          }
+        }
+      });
+    }
+
+    function updateWaypointButton(index) {
+      const buttons = document.querySelectorAll(".waypoint-button");
+      buttons.forEach((button, i) => {
+        if (i === index) {
+          if (lastClickedButton && lastClickedButton !== button) {
+            lastClickedButton.classList.remove("active");
+          }
+          button.classList.add("active");
+          lastClickedButton = button;
+        }
       });
     }
 
@@ -1109,8 +1123,20 @@
       `;
     }
 
+    function startAutoTour() {
+      autoTourActive = true;
+      currentWaypointIndex = 0;
+      moveToSpecificWaypoint(currentWaypointIndex);
+      updateWaypointButton(currentWaypointIndex);
+      updateWaypointText(waypoints[currentWaypointIndex].name);
+    }
+
     function resetView() {
+      autoTourActive = false;
       moveToSpecificWaypoint(0);
+      currentWaypointIndex = 0;
+      updateWaypointButton(0);
+      updateWaypointText(waypoints[0].name);
     }
 
     function exitExperience() {
@@ -1121,14 +1147,6 @@
     document.getElementById("exitButton").addEventListener("click", exitExperience);
 
     const activeWaypoints = new Set();
-
-    if (false) {
-      const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, scene);
-      ground.isVisible = false;
-      const xr = scene.createDefaultXRExperienceAsync({
-        floorMeshes: [ground],
-      });
-    }
 
     BABYLON.SceneLoader.ImportMeshAsync(
       "",
@@ -1144,44 +1162,22 @@
       });
       preloader.classList.add("hidden");
       createWaypointButtons();
-      updateWaypointText("Baseball Couch"); // Set initial text
+      updateWaypointText("Baseball Couch");
     }).catch((error) => {
       console.error("Error loading model file:", error);
       alert("Error loading model file: " + error.message);
       preloader.classList.add("hidden");
       createWaypointButtons();
-      updateWaypointText("Baseball Couch"); // Set initial text
+      updateWaypointText("Baseball Couch");
     });
 
     engine.runRenderLoop(function () {
-      // Simplified render loop: only handle interactions and render the scene
-      if (cameraMode === "tour" && !userControl && !animatingToPath) {
-        waypoints.forEach((wp, index) => {
-          const distance = BABYLON.Vector3.Distance(
-            camera.position,
-            new BABYLON.Vector3(wp.x, wp.y, wp.z)
-          );
-          const triggerDistance = wp.triggerDistance ?? 1.0;
-
-          if (distance <= triggerDistance) {
-            if (!activeWaypoints.has(index)) {
-              activeWaypoints.add(index);
-              executeInteractions(wp.interactions, index);
-            }
-          } else {
-            if (activeWaypoints.has(index)) {
-              activeWaypoints.delete(index);
-              reverseInteractions(wp.interactions);
-            }
-          }
-        });
-      }
-
       scene.render();
     });
 
     scene.onPointerObservable.add(function (evt) {
       if (evt.type === BABYLON.PointerEventTypes.POINTERDOWN) {
+        autoTourActive = false; // Stop auto tour on click
         if (cameraMode === "explore" || cameraMode === "auto") {
           userControl = true;
         } else {
@@ -1191,6 +1187,7 @@
     });
 
     window.addEventListener("keydown", function () {
+      autoTourActive = false; // Stop auto tour on key press
       if (cameraMode === "explore" || cameraMode === "auto") {
         userControl = true;
       } else {
@@ -1232,6 +1229,8 @@
           }
         });
       });
+
+      startAutoTour(); // Start the automatic tour
     });
 
     window.addEventListener("resize", function () {
