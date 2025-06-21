@@ -30,9 +30,9 @@
     const mode = parseInt(urlParams.get('mode')) || 0;
 
     const viewer = new GaussianSplats3D.Viewer({
-        'cameraUp': [0.01896, -0.99955, -0.02341],
-        'initialCameraPosition': [-0.98641, -0.83035, -0.28385],
-        'initialCameraLookAt': [-0.00361, -0.20809, 0.02977],
+        'cameraUp': [0.00000, -1.00000, 0.00000],
+        'initialCameraPosition': [0.17417, -0.92998, 1.53117],
+        'initialCameraLookAt': [0.01338, -0.47611, -0.12649],
         'sphericalHarmonicsDegree': 2
     });
     let path = 'assets/data/5205_Black/5205_Black' + (mode ? '' : '') + '.ply';
