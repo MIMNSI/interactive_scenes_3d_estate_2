@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>3D Gaussian Splat Demo - 1209_Brown</title>
+  <script type="text/javascript" src="js/util.js"></script>
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "./lib/three.module.js",
+            "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+        }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #000000;
+      height: 100vh;
+      margin: 0px;
+    }
+  </style>
+</head>
+<body>
+  <script type="module">
+    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = parseInt(urlParams.get('mode')) || 0;
+
+    const viewer = new GaussianSplats3D.Viewer({
+        'cameraUp': [-0.08914, -0.99601, -0.00495],
+        'initialCameraPosition': [-0.63631, -1.12411, 0.80267],
+        'initialCameraLookAt': [-0.00612, -0.23249, -0.02325],
+        'sphericalHarmonicsDegree': 2
+    });
+    let path = 'assets/data/hindware_wc/wc' + (mode ? '' : '') + '.ply';
+    viewer.addSplatScene(path, {
+      'streamView': true
+    })
+    .then(() => {
+        viewer.start();
+    });
+  </script>
+</body>
+</html>
