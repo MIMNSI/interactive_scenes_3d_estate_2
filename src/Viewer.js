@@ -332,7 +332,7 @@ export class Viewer {
                 }
             }
             for (let controls of [this.perspectiveControls, this.orthographicControls]) {
-                if (controls) {
+                /*if (controls) {
                     controls.listenToKeyEvents(window);
                     controls.rotateSpeed = 0.5;
                     controls.maxPolarAngle = Math.PI * .75;
@@ -340,6 +340,16 @@ export class Viewer {
                     controls.enableDamping = true;
                     controls.dampingFactor = 0.05;
                     controls.target.copy(this.initialCameraLookAt);
+                }*/
+                if (controls) {
+                    controls.listenToKeyEvents(window);
+                    controls.rotateSpeed = 0.5;
+                    controls.minPolarAngle = Math.PI / 5; // Allows looking up to 30 degrees above horizontal
+                    controls.maxPolarAngle = Math.PI / 2.5; // Prevents looking below horizontal (hides chair bottom)
+                    controls.enableDamping = true;
+                    controls.dampingFactor = 0.05;
+                    controls.target.copy(this.initialCameraLookAt);
+                    controls.update();
                 }
             }
             this.controls = this.camera.isOrthographicCamera ? this.orthographicControls : this.perspectiveControls;

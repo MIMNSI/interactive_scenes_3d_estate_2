@@ -56,9 +56,13 @@ class OrbitControls extends EventDispatcher {
         // "target" sets the location of focus, where the object orbits around
         this.target = new Vector3();
 
-        // How far you can dolly in and out ( PerspectiveCamera only )
-        this.minDistance = 0;
-        this.maxDistance = 10;
+        // How far you can dolly in and out ( PerspectiveCamera only ) OG
+        /*this.minDistance = 0;
+        this.maxDistance = 10;*/
+
+        // How far you can dolly in and out ( PerspectiveCamera only ) Products
+        this.minDistance = 0.7;
+        this.maxDistance = 2;
 
         // How far you can zoom in and out ( OrthographicCamera only )
         this.minZoom = 0;
@@ -66,13 +70,17 @@ class OrbitControls extends EventDispatcher {
 
         // How far you can orbit vertically, upper and lower limits.
         // Range is 0 to Math.PI radians.
-        this.minPolarAngle = 0; // radians
-        this.maxPolarAngle = Math.PI; // radians
+        //this.minPolarAngle = 0; // radians
+        //this.maxPolarAngle = Math.PI; // radians
+
+        this.minPolarAngle = Math.PI / 2; // radians (Fixed at 90 degrees for horizontal view)
+        this.maxPolarAngle = Math.PI / 2; // radians (Fixed at 90 degrees for horizontal view)
 
         // How far you can orbit horizontally, upper and lower limits.
         // If set, the interval [min, max] must be a sub-interval of [- 2 PI, 2 PI], with ( max - min < 2 PI )
         this.minAzimuthAngle = - Infinity; // radians
         this.maxAzimuthAngle = Infinity; // radians
+        
 
         // Set to true to enable damping (inertia)
         // If damping is enabled, you must call controls.update() in your animation loop
@@ -81,7 +89,7 @@ class OrbitControls extends EventDispatcher {
 
         // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
         // Set to false to disable zooming
-        this.enableZoom = false;
+        this.enableZoom = true;
         this.zoomSpeed = 1.0;
 
         // Set to false to disable rotating
@@ -91,13 +99,13 @@ class OrbitControls extends EventDispatcher {
         // Set to false to disable panning
         this.enablePan = true;
         this.panSpeed = 2.0;
-        this.screenSpacePanning = false; // if false, pan orthogonal to world-space direction camera.up
+        this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
         this.keyPanSpeed = 10.0; // pixels moved per arrow key push
         this.zoomToCursor = false;
 
         // Set to true to automatically rotate around the target
         // If auto-rotate is enabled, you must call controls.update() in your animation loop
-        this.autoRotate = false;
+        this.autoRotate = true;
         this.autoRotateSpeed = 2.0; // 30 seconds per orbit when fps is 60
 
         // The four arrow keys
@@ -695,7 +703,7 @@ class OrbitControls extends EventDispatcher {
 
             rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight ); // yes, height
 
-            //rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight ); //Disabled y axis rotation
+            rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight ); //Disabled y axis rotation vertical rotation
 
             rotateStart.copy( rotateEnd );
 
@@ -925,7 +933,7 @@ class OrbitControls extends EventDispatcher {
 
             rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight ); // yes, height
 
-            //rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight ); //locked vertical movement for touch too
+            rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight ); //locked vertical rotation for touch too
 
             rotateStart.copy( rotateEnd );
 
