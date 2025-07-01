@@ -3165,6 +3165,10 @@
             this.domElement = domElement;
             this.domElement.style.touchAction = 'none'; // disable touch scroll
 
+             // ✨ SET DEFAULT POSITION HERE ✨
+            // This will override any position set before creating the controls.
+            this.object.position.set(0, 0, 2.5);
+
             // Set to false to disable this control
             this.enabled = true;
 
