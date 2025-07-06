@@ -31,11 +31,11 @@
 
     const viewer = new GaussianSplats3D.Viewer({
         'cameraUp': [0.01896, -0.99955, -0.02341],
-        'initialCameraPosition': [0.14029, -0.84010, 1.04530],
+        'initialCameraPosition': [-0.98641, -0.83035, -0.28385],
         'initialCameraLookAt': [-0.00361, -0.20809, 0.02977],
         'sphericalHarmonicsDegree': 2
     });
-    let path = 'assets/data/1209_DeluxeBlack/1209_DeluxeBlack' + (mode ? '' : '') + '.ply';
+    let path = 'assets/data/1209_Deluxe_Black/1209_Deluxe_Black' + (mode ? '' : '') + '.ply';
     viewer.addSplatScene(path, {
       'streamView': true
     })

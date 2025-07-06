@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>3D Gaussian Splat Demo - 1209_Brown</title>
-  <script type="text/javascript" src="js/util.js"></script>
+  <script type="text/javascript"src="js/util.js"></script>
   <script type="importmap">
     {
         "imports": {
@@ -19,7 +19,47 @@
       background-color: #FFFFFF;
       height: 100vh;
       margin: 0px;
+      font-family: sans-serif; /* Adds a clean, default font */
     }
+
+    /* Style for the instructional label */
+    #infoLabel {
+      position: fixed; /* Positions the label relative to the viewport */
+      top: 20px; /* 20px from the top */
+      left: 50%; /* 50% from the left edge */
+      transform: translateX(-50%); /* Centers the element horizontally */
+      background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+      color: white;
+      padding: 10px 15px;
+      border-radius: 20px; /* Rounded corners */
+      font-size: 14px;
+      z-index: 10; /* Ensures it's on top of the 3D canvas */
+    }
+
+    /* Style for the AR button */
+    #viewButton {
+      position: fixed; /* Positions the button relative to the viewport */
+      bottom: 30px; /* 30px from the bottom */
+      left: 50%; /* 50% from the left edge */
+      transform: translateX(-50%); /* Centers the element horizontally */
+      background-color: #007AFF; /* A modern blue background */
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 15px 25px;
+      border: none; /* Removes the default browser border */
+      border-radius: 30px; /* Creates a pill shape */
+      cursor: pointer; /* Changes cursor to a pointer on hover */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Adds a subtle shadow */
+      z-index: 10; /* Ensures it's on top of the 3D canvas */
+      transition: background-color 0.3s; /* Smooth transition for hover effect */
+    }
+
+    /* Darker background color when hovering over the button */
+    #viewButton:hover {
+      background-color: #0056b3;
+    }
+
   </style>
 </head>
 <body>
@@ -31,7 +71,7 @@
 
     const viewer = new GaussianSplats3D.Viewer({
         'cameraUp': [0.01896, -0.99955, -0.02341],
-        'initialCameraPosition': [0.14029, -0.84010, 1.04530],
+        'initialCameraPosition': [-0.98641, -0.83035, -0.28385],
         'initialCameraLookAt': [-0.00361, -0.20809, 0.02977],
         'sphericalHarmonicsDegree': 2
     });
@@ -43,5 +83,9 @@
         viewer.start();
     });
   </script>
+  
+  <label id="infoLabel">Swipe to Rotate, Pinch to Zoom</label>
+  <button id="viewButton" onclick="window.location.href='1209_ar.html'">View in your Home</button>
+
 </body>
 </html>
