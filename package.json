@@ -78,6 +78,7 @@
         "build/gaussian-splats-3d.module.js.map"
     ],
     "dependencies": {
+        "@leoncvlt/ar-button": "^0.3.2",
         "serve": "^14.2.4"
     }
 }
