@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>3D Gaussian Splat Demo - 1209_Brown</title>
+  <title>3D Gaussian Splat with AR</title>
+  
+  <!-- Note: These local paths must be correctly hosted for the demo to work. -->
   <script type="text/javascript"src="js/util.js"></script>
   <script type="importmap">
     {
@@ -14,55 +16,56 @@
         }
     }
   </script>
+
   <style>
     body {
       background-color: #FFFFFF;
       height: 100vh;
       margin: 0px;
-      font-family: sans-serif; /* Adds a clean, default font */
+      font-family: sans-serif;
     }
 
-    /* Style for the instructional label */
     #infoLabel {
-      position: fixed; /* Positions the label relative to the viewport */
-      top: 20px; /* 20px from the top */
-      left: 50%; /* 50% from the left edge */
-      transform: translateX(-50%); /* Centers the element horizontally */
-      background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.6);
       color: white;
       padding: 10px 15px;
-      border-radius: 20px; /* Rounded corners */
+      border-radius: 20px;
       font-size: 14px;
-      z-index: 10; /* Ensures it's on top of the 3D canvas */
+      z-index: 10;
     }
 
-    /* Style for the AR button */
     #viewButton {
-      position: fixed; /* Positions the button relative to the viewport */
-      bottom: 30px; /* 30px from the bottom */
-      left: 50%; /* 50% from the left edge */
-      transform: translateX(-50%); /* Centers the element horizontally */
-      background-color: #007AFF; /* A modern blue background */
+      /* The button is hidden by default. JS will show it if AR is available. */
+      position: fixed;
+      bottom: calc(30px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #007AFF;
       color: white;
       font-size: 16px;
       font-weight: bold;
       padding: 15px 25px;
-      border: none; /* Removes the default browser border */
-      border-radius: 30px; /* Creates a pill shape */
-      cursor: pointer; /* Changes cursor to a pointer on hover */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Adds a subtle shadow */
-      z-index: 10; /* Ensures it's on top of the 3D canvas */
-      transition: background-color 0.3s; /* Smooth transition for hover effect */
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+      transition: background-color 0.3s, transform 0.2s;
     }
 
-    /* Darker background color when hovering over the button */
     #viewButton:hover {
       background-color: #0056b3;
+      transform: translateX(-50%) scale(1.05);
     }
-
   </style>
 </head>
 <body>
+
+  <!-- This script initializes the main 3D Gaussian Splat viewer -->
   <script type="module">
     import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
 
@@ -75,6 +78,8 @@
         'initialCameraLookAt': [-0.00361, -0.20809, 0.02977],
         'sphericalHarmonicsDegree': 2
     });
+
+    // Note: This local path must be correctly hosted.
     let path = 'assets/data/1209_Brown/1209_Brown' + (mode ? '' : '') + '.ply';
     viewer.addSplatScene(path, {
       'streamView': true
@@ -83,9 +88,55 @@
         viewer.start();
     });
   </script>
+
+  <!-- This model-viewer component is hidden. It's used only to power the AR experience. -->
+  <model-viewer 
+      id="ar-model-viewer"
+      src="https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/1209_brown_.glb" 
+      ar 
+      ar-modes="webxr scene-viewer quick-look"
+      style="display: none;">
+  </model-viewer>
   
+  <!-- UI elements for the main viewer -->
   <label id="infoLabel">Swipe to Rotate, Pinch to Zoom</label>
-  <button id="viewButton" onclick="window.location.href='1209_ar.html'">View in your Home</button>
+  <button id="viewButton">View in your Home</button>
+
+  <!-- Loads the <model-viewer> library -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+  <!-- This script connects the button to the AR functionality -->
+  <script type="module">
+      const modelViewer = document.querySelector("#ar-model-viewer");
+      const arButton = document.querySelector("#viewButton");
+      const isAndroid = /android/i.test(navigator.userAgent);
+
+      // Wait for the AR model to load
+      modelViewer.addEventListener('load', () => {
+        // Check if the device is AR-capable
+        if (modelViewer.canActivateAR) {
+          // If it is, show the AR button
+          arButton.style.display = 'block';
+        }
+      });
+
+      // When the user clicks the AR button...
+      arButton.addEventListener('click', () => {
+        if (isAndroid) {
+          // For Android, we construct an intent URL to launch Scene Viewer.
+          // This effectively opens the AR experience in its own application window.
+          const modelSrc = modelViewer.src;
+          // The file URL must be absolute for the intent to work correctly.
+          const absoluteSrc = new URL(modelSrc, window.location.href).href;
+          const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+          // Launch the intent.
+          window.location.href = intent;
+        } else {
+          // For other devices (like iOS for Quick Look), use the default activation.
+          modelViewer.activateAR();
+        }
+      });
+  </script>
 
 </body>
 </html>
