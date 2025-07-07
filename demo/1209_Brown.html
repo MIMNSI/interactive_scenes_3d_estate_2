@@ -22,7 +22,7 @@
       /* Use dynamic viewport height and prevent scrolling */
       height: 100dvh;
       overflow: hidden;
-      margin: 0px;
+      margin-bottom: 0px;
       font-family: sans-serif;
     }
 
@@ -42,7 +42,7 @@
     #viewButton {
       /* The button is hidden by default. JS will show it if AR is available. */
       position: fixed;
-      bottom: calc(30px + env(safe-area-inset-bottom));
+      bottom: calc(100px + env(safe-area-inset-bottom));
       left: 50%;
       transform: translateX(-50%);
       background-color: #007AFF;
