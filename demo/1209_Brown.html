@@ -6,7 +6,6 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <title>3D Gaussian Splat with AR</title>
   
-  <!-- Note: These local paths must be correctly hosted for the demo to work. -->
   <script type="text/javascript"src="js/util.js"></script>
   <script type="importmap">
     {
@@ -20,7 +19,9 @@
   <style>
     body {
       background-color: #FFFFFF;
-      height: 100vh;
+      /* Use dynamic viewport height and prevent scrolling */
+      height: 100dvh;
+      overflow: hidden;
       margin: 0px;
       font-family: sans-serif;
     }
@@ -65,7 +66,6 @@
 </head>
 <body>
 
-  <!-- This script initializes the main 3D Gaussian Splat viewer -->
   <script type="module">
     import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
 
@@ -89,7 +89,6 @@
     });
   </script>
 
-  <!-- This model-viewer component is hidden. It's used only to power the AR experience. -->
   <model-viewer 
       id="ar-model-viewer"
       src="https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/1209_brown_.glb" 
@@ -98,14 +97,11 @@
       style="display: none;">
   </model-viewer>
   
-  <!-- UI elements for the main viewer -->
   <label id="infoLabel">Swipe to Rotate, Pinch to Zoom</label>
   <button id="viewButton">View in your Home</button>
 
-  <!-- Loads the <model-viewer> library -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
-  <!-- This script connects the button to the AR functionality -->
   <script type="module">
       const modelViewer = document.querySelector("#ar-model-viewer");
       const arButton = document.querySelector("#viewButton");
