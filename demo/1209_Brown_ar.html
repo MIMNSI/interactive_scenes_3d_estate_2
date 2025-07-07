@@ -4,56 +4,75 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>3D Gaussian Splat Demo - 1209_Brown</title>
-  <script type="text/javascript" src="js/util.js"></script>
-  <script type="importmap">
-    {
-        "imports": {
-            "three": "./lib/three.module.js",
-            "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
-        }
-    }
-  </script>
-  <script type="module" src="https://unpkg.com/@leoncvlt/ar-button"></script>
-  <link rel="stylesheet" href="https://unpkg.com/@leoncvlt/ar-button/styles.css">
+  <title>Simple AR Button</title>
+
+  <!-- 1. Add the model-viewer component script -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+
   <style>
     body {
       background-color: #FFFFFF;
       height: 100vh;
       margin: 0px;
+      font-family: sans-serif;
+      /* Use Flexbox to center the button */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Style for the AR button */
+    #viewButton {
+      background-color: #007AFF; /* A modern blue background */
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      padding: 15px 25px;
+      border: none; /* Removes the default browser border */
+      border-radius: 30px; /* Creates a pill shape */
+      cursor: pointer; /* Changes cursor to a pointer on hover */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Adds a subtle shadow */
+      transition: background-color 0.3s; /* Smooth transition for hover effect */
+    }
+
+    /* Darker background color when hovering over the button */
+    #viewButton:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <script type="module">
-    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+  
+  <!-- The button that the user will click -->
+  <button id="viewButton">View in your Home</button>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = parseInt(urlParams.get('mode')) || 0;
+  <!-- Add the hidden model-viewer component to provide AR functionality -->
+  <!-- Make sure to replace these with your actual model files -->
+  <model-viewer
+    id="ar-viewer"
+    src="1209_brown.glb"
+    ios-src="1209_brown.usdz"
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    style="display: none;">
+  </model-viewer>
 
-    const viewer = new GaussianSplats3D.Viewer({
-        'cameraUp': [0.01896, -0.99955, -0.02341],
-        'initialCameraPosition': [-0.98641, -0.83035, -0.28385],
-        'initialCameraLookAt': [-0.00361, -0.20809, 0.02977],
-        'sphericalHarmonicsDegree': 2
-    });
-    let path = 'assets/data/1209_Brown/1209_Brown' + (mode ? '' : '') + '.ply';
-    viewer.addSplatScene(path, {
-      'streamView': true
-    })
-    .then(() => {
-        viewer.start();
+  <!-- Add the script to connect the button to the model-viewer -->
+  <script>
+    // Wait for the page to be fully loaded before running the script
+    document.addEventListener('DOMContentLoaded', () => {
+      const arButton = document.querySelector('#viewButton');
+      const modelViewer = document.querySelector('#ar-viewer');
+
+      // Check if both elements were found before adding the event listener
+      if (arButton && modelViewer) {
+        arButton.addEventListener('click', () => {
+          // Trigger the AR experience
+          modelViewer.activateAR();
+        });
+      }
     });
   </script>
- <button id="viewButton" onclick="window.location.href='1209_ar.html'">View in your Home</button>
-  
-  <label id="infoLabel">Swipe to Rotate, Ping to Zoom</label>
 
-  <ar-button
-    src="1209_brown_.glb"
-    ios-src="1209_brown.usdz"
-    >
-      See in Your Home 
-</ar-button>
 </body>
 </html>
