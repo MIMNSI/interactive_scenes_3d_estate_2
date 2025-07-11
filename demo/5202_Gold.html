@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>3D Gaussian Splat Demo - 5202_Gold</title>
-  <script type="text/javascript" src="js/util.js"></script>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+  <meta content="ie=edge" http-equiv="x-ua-compatible"/>
+  <title>
+   3D Gaussian Splat Demo - 5202_Gold
+  </title>
+  <script src="js/util.js" type="text/javascript">
+  </script>
   <script type="importmap">
-    {
+   {
         "imports": {
             "three": "./lib/three.module.js",
             "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
@@ -15,16 +18,30 @@
     }
   </script>
   <style>
-    body {
-      background-color: #FFFFFF;
-      height: 100vh;
-      margin: 0px;
+   body {
+      background-color: #FFFFFF; height: 100dvh; overflow: hidden;
+      margin-bottom: 0px; font-family: sans-serif;
+    }
+    #infoLabel {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.6); color: white; padding: 10px 15px;
+      border-radius: 20px; font-size: 14px; z-index: 10;
+    }
+    #viewButton {
+      position: fixed; bottom: calc(100px + env(safe-area-inset-bottom)); left: 50%;
+      transform: translateX(-50%); background-color: #007AFF; color: white;
+      font-size: 16px; font-weight: bold; padding: 15px 25px; border: none;
+      border-radius: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10; transition: background-color 0.3s, transform 0.2s;
+    }
+    #viewButton:hover {
+      background-color: #0056b3; transform: translateX(-50%) scale(1.05);
     }
   </style>
-</head>
-<body>
+ </head>
+ <body>
   <script type="module">
-    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+   import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
 
     const urlParams = new URLSearchParams(window.location.search);
     const mode = parseInt(urlParams.get('mode')) || 0;
@@ -43,5 +60,32 @@
         viewer.start();
     });
   </script>
-</body>
+  <model-viewer ar="True" ar-modes="webxr scene-viewer quick-look" id="ar-model-viewer" src="https://metashopai.s3.ap-south-1.amazonaws.com/Italica/5202+gold.glb" style="display: none;">
+  </model-viewer>
+  <label id="infoLabel">
+   Swipe to Rotate, Pinch to Zoom
+  </label>
+  <button id="viewButton">
+   View in your Home
+  </button>
+  <script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" type="module">
+  </script>
+  <script type="module">
+   const modelViewer = document.querySelector("#ar-model-viewer");
+      const arButton = document.querySelector("#viewButton");
+      const isAndroid = /android/i.test(navigator.userAgent);
+      modelViewer.addEventListener('load', () => {
+        if (modelViewer.canActivateAR) { arButton.style.display = 'block'; }
+      });
+      arButton.addEventListener('click', () => {
+        if (isAndroid) {
+          const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
+          const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+          window.location.href = intent;
+        } else {
+          modelViewer.activateAR();
+        }
+      });
+  </script>
+ </body>
 </html>
