@@ -1,0 +1,139 @@
+Of course. Here is the modified HTML file that adds a waypoint-based tour experience to your living room scene.
+
+To achieve this, I've integrated the necessary HTML, CSS, and JavaScript from the `maargit-exterior_converted.html` file you provided and adapted it to work with the Mark Kellogg viewer.
+
+### **living\_room\_tour.html**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>3D Gaussian Splat Demo - Living Room</title>
+  <script type="text/javascript" src="js/util.js"></script>
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "./lib/three.module.js",
+            "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+        }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #000000;
+      height: 100vh;
+      margin: 0px;
+    }
+    #waypoint-container {
+        z-index: 100;
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        background: rgba(0,0,0,0.6);
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .waypoint-button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="waypoint-container"></div>
+  <script type="module">
+    import * as THREE from 'three';
+    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+
+    const viewer = new GaussianSplats3D.Viewer({
+        'cameraUp': [-0.00824, 0.01651, 0.99983],
+        'initialCameraPosition': [0.25311, -0.15665, 0.04118],
+        'initialCameraLookAt': [0.20820, 0.50174, -0.15923],
+        'sphericalHarmonicsDegree': 1
+    });
+
+    const waypoints = [
+        {
+            name: "Entrance",
+            position: [0.25, -0.15, 0.04],
+            lookAt: [0.20, 0.50, -0.15]
+        },
+        {
+            name: "Living Area",
+            position: [-1.5, 0.0, 0.5],
+            lookAt: [0.0, 0.0, 0.0]
+        },
+        {
+            name: "Dining Area",
+            position: [1.0, 0.0, -1.0],
+            lookAt: [0.0, 0.0, 0.0]
+        }
+    ];
+
+    const waypointContainer = document.getElementById('waypoint-container');
+
+    waypoints.forEach((waypoint, index) => {
+        const button = document.createElement('button');
+        button.innerText = waypoint.name;
+        button.className = 'waypoint-button';
+        button.addEventListener('click', () => {
+            moveToWaypoint(index);
+        });
+        waypointContainer.appendChild(button);
+    });
+
+    function moveToWaypoint(index) {
+        const waypoint = waypoints[index];
+        const targetPosition = new THREE.Vector3().fromArray(waypoint.position);
+        const targetLookAt = new THREE.Vector3().fromArray(waypoint.lookAt);
+
+        // Disable orbit controls during animation
+        if (viewer.controls) {
+            viewer.controls.enabled = false;
+        }
+
+        const animate = () => {
+            const currentPosition = viewer.camera.position;
+            const currentLookAt = viewer.controls.target;
+
+            if (currentPosition.distanceTo(targetPosition) > 0.01) {
+                currentPosition.lerp(targetPosition, 0.05);
+                currentLookAt.lerp(targetLookAt, 0.05);
+                requestAnimationFrame(animate);
+            } else {
+                // Re-enable orbit controls
+                if (viewer.controls) {
+                    viewer.controls.enabled = true;
+                }
+            }
+        };
+        animate();
+    }
+
+    let path = 'assets/data/living_room/living_room.ksplat';
+    viewer.addSplatScene(path, {
+      'streamView': true
+    })
+    .then(() => {
+        viewer.start();
+    });
+  </script>
+</body>
+
+</html>
+```
