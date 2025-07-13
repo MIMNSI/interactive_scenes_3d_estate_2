@@ -19,7 +19,7 @@
   </script>
   <style>
    body {
-      background-color: #1d1d1d; height: 100dvh; overflow: hidden;
+      background-color: #FFFFFF; height: 100dvh; overflow: hidden;
       margin-bottom: 0px; font-family: sans-serif;
     }
     #infoLabel {
@@ -60,7 +60,26 @@
         viewer.start();
     });
   </script>
-  <model-viewer ar="True" ar-modes="webxr scene-viewer quick-look" id="ar-model-viewer" src="https://metashopai.s3.ap-south-1.amazonaws.com/Italica/5106+white.glb" style="display: none;">
+  <script src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js" type="module">
+  </script>
+  <script type="module">
+   const modelViewer = document.querySelector("#ar-model-viewer");
+      const arButton = document.querySelector("#viewButton");
+      const isAndroid = /android/i.test(navigator.userAgent);
+      modelViewer.addEventListener('load', () => {
+        if (modelViewer.canActivateAR) { arButton.style.display = 'block'; }
+      });
+      arButton.addEventListener('click', () => {
+        if (isAndroid) {
+          const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
+          const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+          window.location.href = intent;
+        } else {
+          modelViewer.activateAR();
+        }
+      });
+  </script>
+  <model-viewer ar="True" ar-modes="webxr scene-viewer quick-look" id="ar-model-viewer" src="https://metashopai.s3.ap-south-1.amazonaws.com/Italica/batch3/5106_White.glb" style="display: none;">
   </model-viewer>
   <label id="infoLabel">
    Swipe to Rotate, Pinch to Zoom
