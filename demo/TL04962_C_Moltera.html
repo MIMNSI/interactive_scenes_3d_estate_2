@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>3D Gaussian Splat Demo - TL04962_C_Moltera</title>
+  <script type="text/javascript" src="js/util.js"></script>
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "./lib/three.module.js",
+            "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+        }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #FFFFFF;
+      height: 100vh;
+      margin: 0px;
+    }
+  </style>
+</head>
+<body>
+  <script type="module">
+    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = parseInt(urlParams.get('mode')) || 0;
+
+    const viewer = new GaussianSplats3D.Viewer({
+        'cameraUp': [	0.00000, -1.00000, 0.00000],
+        'initialCameraPosition': [0.01717, -0.66300, 0.69276],
+        'initialCameraLookAt': [0.01077, -0.06776, -0.01194],
+        'sphericalHarmonicsDegree': 2
+    });
+    let path = 'https://metashopai.s3.ap-south-1.amazonaws.com/MaterialDepot/TL04962_C_Moltera.ply';
+    viewer.addSplatScene(path, {
+      'streamView': true
+    })
+    .then(() => {
+        viewer.start();
+    });
+  </script>
+</body>
+</html>
