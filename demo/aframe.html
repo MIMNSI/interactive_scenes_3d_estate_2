@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://quadjr.github.io/aframe-gaussian-splatting/index.js"></script>
+
+    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
+    <script>
+    
+    AFRAME.registerComponent('grabber', {
+      init: function () {
+      this.grabbed = null;
+  
+    },
+    events: {
+      gripdown: function(evt) {
+        if (evt.currentTarget.components['raycaster'].intersections.length>0) {
+          this.grabbed = evt.currentTarget.components['raycaster'].intersections[0].object.el;
+          evt.currentTarget.object3D.attach(this.grabbed.object3D);          
+        }
+    }, gripup: function(evt) {
+      if (this.grabbed) {
+        this.el.sceneEl.object3D.attach(this.grabbed.object3D);
+        this.grabbed = null;
+      }
+    }
+  }
+});
+    </script>
+
+  </head>
+  <body>
+    <a-scene renderer="antialias: false">
+
+      <a-box position="0 1 -.5" material="side: double; color: #EF2D5E; transparent: true; opacity: 0.0" scale=".5 .5 .5">
+      <a-entity gaussian_splatting="src: assets/data/9612_YellowRed/9612_YellowRed.splat;" rotation="0 00" position="0 0 0" scale=".5 .5 .5"></a-entity>
+      </a-box> 
+      <a-entity id="right-hand"
+              laser-controls="hand: right"
+              oculus-touch-controls="hand: right"
+              raycaster="lineColor: #fff; lineOpacity: 0.7; far: 10"
+              grabber>
+      </a-entity>
+      <a-entity id="left-hand"
+              laser-controls="hand: left"
+              oculus-touch-controls="hand: left"
+              raycaster="lineColor: #fff; lineOpacity: 0.7; far: 10"
+              grabber>
+      </a-entity>
+
+    </a-scene>
+  </body>
+</html>

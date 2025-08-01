@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from webxr.cz/xr.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 24 Jul 2025 20:05:40 GMT -->
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/x-icon" href="webxr/favicon.ico">
+  <link rel="shortcut icon" href="webxr/favicon.ico" />
+  <meta name="google" content="notranslate">
+  <!-- CONFIGURATION -->
+
+  <!-- Allow web app to be run in full-screen mode - iOS. -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <!-- Allow web app to be run in full-screen mode - Android. -->
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Make the app title different than the page title - iOS. -->
+  <meta name="apple-mobile-web-app-title" content="Gaussian Splatting in AR/VR">
+
+  <!-- Make the app title different than the page title and configure icons - Android. -->
+  <link rel="manifest" href="webxr/manifest.json">
+
+  <!-- IE configuration for icons and colors is in browserconfig.xml -->
+
+  <!-- Configure the status bar - iOS. -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <!-- Set the viewport. -->
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimal-ui">
+
+  <!-- Disable automatic phone number detection. -->
+  <meta name="format-detection" content="telephone=no">
+  
+   <!-- ICONS -->
+
+	<!-- Windows dock color -->
+	<meta name="msapplication-TileColor" content="#fff">
+
+	<!-- Android dock color -->
+	<meta name="theme-color" content="#fff">
+
+	<!-- STARTUP IMAGES - iOS only -->
+
+	<!-- iPad retina portrait startup image -->
+	<link href="webxr/webxr/splash-1536x2008.html"
+		  media="(device-width: 768px) and (device-height: 1024px)
+				 and (-webkit-device-pixel-ratio: 2)
+				 and (orientation: portrait)"
+		  rel="apple-touch-startup-image">
+
+	<!-- iPad retina landscape startup image -->
+	<link href="webxr/webxr/splash-1496x2048.html"
+		  media="(device-width: 768px) and (device-height: 1024px)
+				 and (-webkit-device-pixel-ratio: 2)
+				 and (orientation: landscape)"
+		  rel="apple-touch-startup-image">
+
+	<!-- iPad non-retina portrait startup image -->
+	<link href="webxr/splash-768x1004.html"
+		  media="(device-width: 768px) and (device-height: 1024px)
+				 and (-webkit-device-pixel-ratio: 1)
+				 and (orientation: portrait)"
+		  rel="apple-touch-startup-image">
+
+	<!-- iPad non-retina landscape startup image -->
+	<link href="webxr/splash-748x1024.html"
+		  media="(device-width: 768px) and (device-height: 1024px)
+				 and (-webkit-device-pixel-ratio: 1)
+				 and (orientation: landscape)"
+		  rel="apple-touch-startup-image">
+
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Gaussian Splatting in AR/VR</title>
+  <script async src="webxr/gs/js/es-module-shims.js"></script> 
+  <script type="text/javascript" src="webxr/gs/js/util.js"></script>
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "./webxr/gs/lib/three.module.js",
+            "gaussian-splats-3d": "./webxr/gs/lib/gs.module.js"
+        }
+    }
+	
+  </script>
+  <style>
+
+	img{
+		max-height:70px;
+		max-width:70px;
+		height:auto;
+		width:auto;
+	}
+	
+	body {
+	  background-color: #000000;
+	  color: white;
+	  -webkit-user-select: none; /* Safari */
+	  -ms-user-select: none; /* IE 10 and IE 11 */
+	  user-select: none; /* Standard syntax */
+	}	
+	
+	.xr {
+		width: 100%;
+        height: 100%;
+        position: absolute;
+		top: 0px;
+		left: 0px;
+	}
+	.back {
+		text-align: center;
+		padding: 4px;
+		color: white;
+		font-size: 120%;
+		width: 50px;
+	    height: 20px;
+		top: 10px;
+		left: 10px;
+        position: absolute;
+		border-radius: 4px;
+		border: 1px solid #DADADA;
+	}
+	.switch {
+		text-align: center;
+		padding: 4px;
+		width: 50px;
+	    height: 20px;
+		top: 10px;
+		right: 10px;
+        position: absolute;		
+	}
+	.hand {
+        cursor: pointer;
+	    -webkit-user-select: none; /* Safari */
+	    -ms-user-select: none; /* IE 10 and IE 11 */
+	    user-select: none; /* Standard syntax */
+	}
+	.icon {
+		margin-left: 8px;
+		margin-right: 8px;
+	}
+	ul {
+	  list-style-type: none;	 
+	  margin: 4px; 
+	  padding: 0; 
+	}	
+	
+	.header {
+		margin-left: 10px;
+		margin-bottom: 24px;
+		h2 {
+		  font: bold 24px/1.5 Helvetica, Verdana, sans-serif;		  
+		  margin-bottom: 6px;
+		}
+		p {
+		  font-style: italic;
+		  font-family: arial,sans-serif;
+		  font-size: 14px;
+		  color: silver;
+		}
+		a {
+			color: white;
+			text-decoration: none;
+		}
+	}
+	
+	h3 {
+	  font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
+	}
+
+	li img {
+	  float: left;
+	  margin: 0 15px 0 0;
+	  min-width: 70px;
+	}
+	li:not(:last-of-type) {
+	  border-bottom: 1px solid white;
+	}
+	li p {
+		font-family: arial,sans-serif;
+		font-size: 14px;
+		color: silver;
+	}
+
+	li {
+	  padding: 10px;	  
+	  overflow: auto;
+	}
+
+	li:hover {
+	  background: #333;
+	  cursor: pointer;
+	}
+	
+	.li-parent {
+	  padding: 0rem;
+	  display: flex;
+	}
+
+	.li-left {
+	  min-width: 75px;
+	  outline: none;
+	  font-family: arial,sans-serif;
+	  font-size: 14px;
+ 	  color: white;
+	}
+
+	.li-right {
+	  padding-left: .5rem;
+	  display: inline-block;
+	  font-family: arial,sans-serif;
+	  font-size: 14px;
+ 	  color: silver;
+	}
+	
+	.header-img {
+	  height:16px;
+	  margin-right:6px;
+	}
+	
+	.header-info {
+	  vertical-align: top;
+	}
+	
+  </style>
+  
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3SV7FBYSCQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3SV7FBYSCQ');
+</script>
+<body class="body">
+<script>
+const hideXr = () => {
+	const index = 'xr.html'
+	window.location.href = index
+}
+
+const topFunction = () => {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+const changeXr = () => {
+	const params = new URLSearchParams(location.search);
+	if (params.has('xr')) {
+		params.set('xr', params.get('xr') === 'ar' ? 'vr' : 'ar');
+		location.search = params.toString();
+	}
+}
+
+const initXrIcon = () => {
+	const switchImg = document.getElementById('switchImg')
+	const params = new URLSearchParams(location.search);
+	if (params.has('xr') && switchImg) {
+		switchImg.src = params.get('xr') === 'ar' ? 'webxr/gs/assets/vr.png' : 'webxr/gs/assets/ar.png'
+		switchImg.title = params.get('xr') === 'ar' ? 'Switch to VR' : 'Switch to AR'
+	}
+}
+
+
+</script>
+<div id="list"></div>
+<div id="xr" class="xr" style="display: none;"></div>
+<div id="back" class="back" style="display: none;"><div onclick="hideXr()" class="hand">Back</div></div>
+<div id="switch" class="switch hand" style="display: none;" onclick="changeXr()"><img id="switchImg"/></div>
+
+<script type="module">
+import * as GaussianSplats3D from 'gaussian-splats-3d';
+const listElement = document.getElementById('list')
+const xrElement = document.getElementById('xr')
+const back = document.getElementById('back')
+const switchXr = document.getElementById('switch')
+const loadScene = (sceneId, xr) => {
+	const scene = data.find(f => f.id === sceneId)
+	if (!scene) {
+		return
+	}
+	listElement.style.display = 'none'	
+	xrElement.style.display = ''
+	back.style.display = ''
+	switchXr.style.display = ''
+	const viewer = new GaussianSplats3D.Viewer({
+		rootElement: xrElement,
+		cameraUp: [0, 0, 1],
+		initialCameraPosition: [-10, 0, 2],
+		initialCameraLookAt: [0, 0, 0],
+		sharedMemoryForWorkers: false,
+		gpuAcceleratedSort: false,
+		transformAr: scene.transformAr,
+		transformVr: scene.transformVr,
+		transform: scene.transform,
+		backgroundColor: scene.backgroundColor ?? 0x000000,
+		vrAutorotation: scene.vrAutorotation ?? true,
+		xr: xr,
+		scenes: data
+	});
+	viewer.loadFile(scene.url)
+	.then(() => {
+		viewer.start();
+		topFunction();		
+	});
+
+}
+const data = [{
+		id: 'mutt',
+		name: 'Ford Mutt M151',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '12MB',
+		img: 'webxr/gs/assets/mutt.jpg',
+		url: 'webxr/gs/assets/data/mutt.ksplat',
+		transform: {
+			cameraLookAt: [ 0, 0, 0 ],
+			scale: {
+				x: 8.0,
+				y: 8.0,
+				z: 8.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.0,
+				z: 0.0
+			},
+			rotate: {
+				x: -5.0,
+				y: 10.0,
+				z: 90.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.25,
+				z: -1.0
+			},
+			rotate: {
+				x: 90,
+				y: 90.0,
+				z: 0.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.5,
+				z: -2.0
+			},
+			rotate: {
+				x: -85,
+				y: 5.0,
+				z: 0.0
+			}
+		}
+	},{
+		id: 'vel03',
+		name: 'WebXR Video - Lineup',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '37MB',
+        v: '/webxr/player/vel03.html',
+		img: 'webxr/player/vel03.jpg'
+	},{
+		id: 'pg07',
+		name: 'WebXR Video - Prague National Museum',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '30MB',
+        v: '/webxr/player/pg07.html',
+		img: 'webxr/player/pg07.jpg'
+	},{
+		id: 't07t2',
+		name: 'WebXR Thermal Video',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '32MB',
+        v: '/webxr/player/t07t2.html',
+		img: 'webxr/player/t07t2.jpg'
+	},{
+		id: 'pg18',
+		name: 'WebXR Video - Prague National Museum',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '37MB',
+        v: '/webxr/player/pg18.html',
+		img: 'webxr/player/pg18.jpg'
+	},{
+		id: 'na2b',
+		name: 'WebXR Video',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '31MB',
+        v: '/webxr/player/na2b.html',
+		img: 'webxr/player/na2b.jpg'
+	},{
+		id: 'snowcat',
+		name: 'Pistenbully 400',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '12MB',
+		img: 'webxr/gs/assets/snowcat.jpg',
+		url: 'webxr/gs/assets/data/rolba.ksplat',
+		transform: {
+			cameraLookAt: [ 0, 0, 0 ],
+			scale: {
+				x: 9.0,
+				y: 9.0,
+				z: 9.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.0,
+				z: 0.0
+			},
+			rotate: {
+				x: 0.0,
+				y: 0.0,
+				z: -90.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.4,
+				z: -0.8
+			},
+			rotate: {
+				x: 90,
+				y: -90.0,
+				z: 180.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.2,
+				z: -2.0
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 0.0
+			}
+		}
+	},{
+		id: 'lion',
+		name: 'The Sleeping Lion',
+		nameCs: 'Spící lev, pomník bitvy r. 1866',
+		description: ' The monument is dedicated to the fallen of the 1866 battle of the Prussian-Austrian War at Česká Skalice',
+		descriptionCs: 'Monumentální pomník Spící lev se nachází na okraji Přírodní rezervace Dubno. Pomník je věnován obětem bitvy r. 1866 Prusko-Rakouské války u České Skalice, poručíku Adolfu Studničkovi od 77. pěšího pluku a setníku Emilu Riedlovi od 5. praporu polních myslivců.',
+		size: '3MB',
+		img: 'webxr/gs/assets/lev.jpg',
+		url: 'webxr/gs/assets/data/levB.ksplat',
+		transform: {
+			cameraLookAt: [ 0, 0, 0 ],
+			scale: {
+				x: 2.0,
+				y: 2.0,
+				z: 2.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.0,
+				z: 0.0
+			},
+			rotate: {
+				x: -180,
+				y: 0.0,
+				z: 200.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 1.0,
+				y: 1.0,
+				z: 1.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.75,
+				z: -1.0
+			},
+			rotate: {
+				x: -270,
+				y: -20.0,
+				z: -40.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 1.0,
+				y: 1.0,
+				z: 1.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.4,
+				z: -2.0
+			},
+			rotate: {
+				x: -270,
+				y: 0.0,
+				z: 105.0
+			}
+		}
+	},{
+		id: 'legionaries',
+		name: 'Monument to the Legionaries',
+		nameCs: 'Pomník legionářů',
+		description: 'A monument of a kneeling Russian legionary paying tribute to his fallen comrades in arms',
+		descriptionCs: 'Pomník klečícího ruského legionáře, který vzdává poctu padlým spolubojovníkům. Autorem je sochař František Bílek.',
+		size: '7MB',
+		img: 'webxr/gs/assets/leg.jpg',
+		url: 'webxr/gs/assets/data/legB.ksplat',
+		transform: {		
+			cameraLookAt: [ -0.29554566856510034, 0.9265423411744749, -0.6246939222870443 ],
+			scale: {
+				x: 8.0,
+				y: 8.0,
+				z: 8.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.0,
+				z: 2.0
+			},
+			rotate: {
+				x: -5,
+				y: 0.0,
+				z: 70.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 2.0,
+				y: 2.0,
+				z: 2.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.0,
+				z: 0.0
+			},
+			rotate: {
+				x: -90,
+				y: 65.0,
+				z: 105.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 2.0,
+				y: 2.0,
+				z: 2.0
+			},
+			position: {
+				x: 0.0,
+				y: 2.3,
+				z: -1.0
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 105.0
+			}
+		}
+	},{
+		id: 'grandmother',
+		name: 'Grandmother with Children',
+		nameCs: 'Pomník Babička s dětmi',
+		description: 'The sculpture, unveiled in 1922, was made by sculptor Otto Gutfreund according to a design by architect Pavel Janák. It is an integral part and symbol of Grandma\'s Valley. The figures on the sculpture represent grandmother Magdalena Novotná with her grandchildren Barunka, Vilém, Jan, Adélka and the dogs Sultán and Tyrl',
+		descriptionCs: 'Sousoší odhalené roku 1922 zhotovil sochař Otto Gutfreund podle návrhu architekta Pavla Janáka. Je nedílnou součástí a symbolem Babiččina údolí. Postavy na sousoší představují babičku Magdalénu Novotnou s vnoučaty Barunkou, Vilémem, Janem, Adélka a psy Sultánem a Tyrlem',
+		size: '10MB',
+		img: 'webxr/gs/assets/sousosi.jpg',
+		url: 'webxr/gs/assets/data/sousosiB.ksplat',
+		transform: {
+			cameraLookAt: [ 0, 0, 0 ],
+			scale: {
+				x: 8.0,
+				y: 8.0,
+				z: 8.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.0,
+				z: 0.5
+			},
+			rotate: {
+				x: -10,
+				y: 0.0,
+				z: 70.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 2.0,
+				y: 2.0,
+				z: 2.0
+			},
+			position: {
+				x: 0.0,
+				y: 0,
+				z: 0.0
+			},
+			rotate: {
+				x: 90,
+				y: 120.0,
+				z: 0.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 2.0,
+				y: 2.0,
+				z: 2.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.5,
+				z: -1.0
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 105.0
+			}
+		}
+	},{
+		id: 'dragon',
+		name: 'Dragon - Carved Statue',
+		nameCs: 'Drak - Vyřezávaná socha',
+		description: '',
+		descriptionCs: '',
+		size: '10MB',
+		img: 'webxr/gs/assets/drak.jpg',
+		url: 'webxr/gs/assets/data/drakB.ksplat',
+		transform: {
+			cameraLookAt: [ 0, 0, 0 ],
+			scale: {
+				x: 8.0,
+				y: 8.0,
+				z: 8.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.0,
+				z: 0.5
+			},
+			rotate: {
+				x: 0,
+				y: 0.0,
+				z: 210.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.25,
+				z: -1.5
+			},
+			rotate: {
+				x: 90.0,
+				y: -24.0,
+				z: 90.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.5,
+				z: -1.75
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 285.0
+			}
+		}
+	},{
+		id: 'cinderella',
+		name: 'Cinderella - Carved Statue',
+		nameCs: 'Popelka - Vyřezávaná socha',
+		description: '',
+		descriptionCs: '',
+		size: '10MB',
+		img: 'webxr/gs/assets/popelka.jpg',
+		url: 'webxr/gs/assets/data/popelkaB.ksplat',
+		transform: {
+			cameraLookAt: [ 0, 0, 0 ],
+			scale: {
+				x: 8.0,
+				y: 8.0,
+				z: 8.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.0,
+				z: 0.1
+			},
+			rotate: {
+				x: 0,
+				y: 0.0,
+				z: 0.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.25,
+				z: -0.5
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 75.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.5,
+				z: -1.0
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 75.0
+			}
+		}
+	},{
+		id: 'ST',
+		name: 'Prague Old Town Square',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '17MB',
+		backgroundColor: 0x9DA0A3,
+		vrAutorotation: false,
+		img: 'webxr/gs/assets/st.jpg',
+		url: 'webxr/gs/assets/data/staromak.ksplat',
+				transform: {
+			cameraLookAt: [ -7.871278187438227, -14.941791687833968, 1.7770027312443173 ],
+			scale: {
+				x: 20.0,
+				y: 20.0,
+				z: 20.0
+			},
+			position: {
+				x: -11.300318655487693, 
+				y: -18.770776084345577, 
+				z: 1.8522395851579523
+			},
+			rotate: {
+				x: -90,
+				y: 180.0,
+				z: 0.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 1.0,
+				y: 1.0,
+				z: 1.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.0,
+				z: 1.0
+			},
+			rotate: {
+				x: 90.0,
+				y: 0.0,
+				z: 0.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 1.0,
+				y: 1.0,
+				z: 1.0
+			},
+			position: {
+				x: 0.4,
+				y: 1.5,
+				z: -0.8
+			},
+			rotate: {
+				x: 180.0,
+				y: 180.0,
+				z: 0.0
+			}
+		}
+	},{
+		id: 'pano',
+		name: '3D Gaussian Splatting Panorama',
+		nameCs: '',
+		description: '3D Gaussian Splatting Panorama With iPhone LiDAR & Insta360 Flow Pro',
+		descriptionCs: '',
+		size: '13MB',
+		img: 'webxr/gs/assets/pano.jpg',
+		url: 'webxr/gs/assets/data/pano.ksplat',
+		transform: {
+			cameraLookAt: [ 0, 0, 0 ],
+			scale: {
+				x: 8.0,
+				y: 8.0,
+				z: 8.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.0,
+				z: 0.1
+			},
+			rotate: {
+				x: 0.0,
+				y: 0.0,
+				z: 0.0
+			}
+		},
+		transformAr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 0.5,
+				z: 0.0
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 0.0
+			}
+		},
+		transformVr: {
+			scale: {
+				x: 3.0,
+				y: 3.0,
+				z: 3.0
+			},
+			position: {
+				x: 0.0,
+				y: 1.25,
+				z: 0.0
+			},
+			rotate: {
+				x: -90,
+				y: 0.0,
+				z: 0.0
+			}
+		}
+	},{
+		id: 'g1b2',
+		name: 'WebXR Video',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '24MB',
+        v: '/webxr/player/g1b2.html',
+		img: 'webxr/player/g1b2.jpg'
+	},{
+		id: 't06t2',
+		name: 'WebXR Thermal Video',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '33MB',
+        v: '/webxr/player/t06t2.html',
+		img: 'webxr/player/t06t2.jpg'
+	},{
+		id: 'tut18',
+		name: 'WebXR Video - Golden Throne of Tutankhamun',
+		nameCs: '',
+		description: '',
+		descriptionCs: '',
+		size: '23MB',
+        v: '/webxr/player/tut18.html',
+		img: 'webxr/player/tut18.jpg'
+	}]
+
+const openScene = (scene, xr, vid = '') => {
+	const index = 'xr.html'
+	if (vid != '') {
+      		window.location.href = vid
+	}
+	else if (!scene) {
+		window.location.href = index
+	}
+	else {
+		window.location.href = `${index}?scene=${scene}&xr=${xr}`
+	}
+}
+
+const loadData = () => {
+	let inner = ''
+	if (data && data.length > 0){
+		for (const scene of data) {
+			if (scene.hideFromMenu) {
+				continue
+			}						
+			inner += `<li id="link-${scene.id}-${navigator.userAgent.includes('Quest') ? 'vr' : 'ar'}"><img src="${scene.img}"/><h3>${scene.name}</h3>
+			<div class="li-parent">
+			  <div class="li-left">Size: ${scene.size}</div>
+			  <div class="li-right">${scene.description}</div>
+			</div>
+			</li>`
+		}
+	}
+	const header = `<div class="header"><h2>Gaussian Splatting in AR/VR</h2>
+	<p>Gaussian splats web viewer with Android AR/VR support (iOS doesn't yet support WebXR)<br/>
+	Gaussian splats are created by <a href="https://poly.cam">poly.cam</a><br/>
+	AR/VR viewer use <a href="https://github.com/mkkellogg/GaussianSplats3D">GaussianSplats3D</a> and adds AR/VR support
+	<br/>
+	<a href="https://youtu.be/Jp7Hz7OxaoE"><img src="webxr/gs/assets/yt.png" class="header-img"/><span class="header-info"/>Gaussian Splatting in AR</span></a>
+	<br/>
+	<a href="mailto:filip.cir@gmail.com"><img src="webxr/gs/assets/mail.png" class="header-img"/><span class="header-info"/>Mail</a>
+	<br/>
+	<a href="https://webxr.cz/xr.html?scene=lion&xr=vr&list=legionaries,grandmother,snowcat,mutt,dragon,cinderella,paw,lion"><span class="header-info"/>VR playlist</a>
+	<br/>
+	<a href="https://webxr.cz/maps"><span class="header-info"/>Google maps 3D Tiles in VR</a> | <a href="https://youtu.be/xjHTAB0O1BI"><img src="webxr/gs/assets/yt.png" class="header-img"/><span class="header-info"/>Google maps 3D in VR</span></a>
+	<br/>	<br/>
+	<a href="https://youtu.be/E9DHxc76n80"><img src="webxr/gs/assets/yt.png" class="header-img"/><span class="header-info"/>4D Procedural Splats on Meta Quest 3</span></a>
+	<br/>
+	<a href="https://webxr.cz/lidar/index.html"><span class="header-info"/><h4>iPhone LiDAR Video</h4></span></a>
+	</p></div>`
+	listElement.innerHTML = `${header}<div><ul>${inner}</ul></div>`
+	if (data && data.length > 0){
+		for (const scene of data) {
+			const elementAr = document.getElementById(`link-${scene.id}-ar`)
+			if (elementAr) {
+				elementAr.onclick = () => { scene.v ? openScene(scene.id,'ar',scene.v) : openScene(scene.id,'ar') }
+			}
+			const elementVr = document.getElementById(`link-${scene.id}-vr`)
+			if (elementVr) {
+				elementVr.onclick = () => { scene.v ? openScene(scene.id,'vr',scene.v) : openScene(scene.id,'vr') }
+			}
+		}
+	}
+}
+const params = new URLSearchParams(location.search);
+if (params.has('scene')) {
+	const scene = params.get('scene')
+	const xr = params.has('xr') ? params.get('xr') : ''
+	loadScene(scene, xr)
+}
+loadData();
+initXrIcon();
+</script>
+</body>
+
+<!-- Mirrored from webxr.cz/xr.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 24 Jul 2025 20:05:48 GMT -->
+</html>
