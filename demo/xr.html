@@ -3,47 +3,558 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/webxr/favicon.ico">
+  <link rel="shortcut icon" href="/webxr/favicon.ico" />
+  <meta name="google" content="notranslate">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <meta name="apple-mobile-web-app-title" content="Gaussian Splatting in AR/VR">
+
+  <link rel="manifest" href="/webxr/manifest.json">
+
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimal-ui">
+
+  <meta name="format-detection" content="telephone=no">
+  
+   <meta name="msapplication-TileColor" content="#fff">
+
+    <meta name="theme-color" content="#fff">
+
+    <link href="/webxr/webxr/splash-1536x2008.jpg"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 2)
+                 and (orientation: portrait)"
+          rel="apple-touch-startup-image">
+
+    <link href="/webxr/webxr/splash-1496x2048.jpg"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 2)
+                 and (orientation: landscape)"
+          rel="apple-touch-startup-image">
+
+    <link href="/webxr/splash-768x1004.jpg"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 1)
+                 and (orientation: portrait)"
+          rel="apple-touch-startup-image">
+
+    <link href="/webxr/splash-748x1024.jpg"
+          media="(device-width: 768px) and (device-height: 1024px)
+                 and (-webkit-device-pixel-ratio: 1)
+                 and (orientation: landscape)"
+          rel="apple-touch-startup-image">
+
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>3D Gaussian Splat Demo - VR Garden</title>
-  <script type="text/javascript" src="js/util.js"></script>
+  <title>Gaussian Splatting in AR/VR</title>
+  <script async src="webxr/gs/js/es-module-shims.js"></script> 
+  <script type="text/javascript" src="webxr/gs/js/util.js"></script>
   <script type="importmap">
     {
         "imports": {
-            "three": "./lib/three.module.js",
-            "@mkkellogg/gaussian-splats-3d": "./lib/gaussian-splats-3d.module.js"
+            "three": "./webxr/gs/lib/three.module.js",
+            "gaussian-splats-3d": "./webxr/gs/lib/gs.module.js"
         }
     }
+    
   </script>
   <style>
 
+    img{
+        max-height:70px;
+        max-width:70px;
+        height:auto;
+        width:auto;
+    }
+    
     body {
       background-color: #000000;
-      height: 100vh;
-      margin: 0px;
+      color: white;
+      -webkit-user-select: none; /* Safari */
+      -ms-user-select: none; /* IE 10 and IE 11 */
+      user-select: none; /* Standard syntax */
+    }   
+    
+    .xr {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+    }
+    .back {
+        text-align: center;
+        padding: 4px;
+        color: white;
+        font-size: 120%;
+        width: 50px;
+        height: 20px;
+        top: 10px;
+        left: 10px;
+        position: absolute;
+        border-radius: 4px;
+        border: 1px solid #DADADA;
+    }
+    .switch {
+        text-align: center;
+        padding: 8px 12px;
+        width: auto;
+        height: auto;
+        top: 10px;
+        right: 10px;
+        position: absolute;  
+        border-radius: 4px;
+        border: 1px solid #DADADA;
+        background-color: #333;
+    }
+    .hand {
+        cursor: pointer;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .icon {
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+    ul {
+      list-style-type: none;     
+      margin: 4px; 
+      padding: 0; 
+    }   
+    
+    .header {
+        margin-left: 10px;
+        margin-bottom: 24px;
+    }
+    .header h2 {
+      font: bold 24px/1.5 Helvetica, Verdana, sans-serif;         
+      margin-bottom: 6px;
+    }
+    .header p {
+      font-style: italic;
+      font-family: arial,sans-serif;
+      font-size: 14px;
+      color: silver;
+    }
+    .header a {
+        color: white;
+        text-decoration: none;
+    }
+    
+    h3 {
+      font: bold 20px/1.5 Helvetica, Verdana, sans-serif;
     }
 
+    li img {
+      float: left;
+      margin: 0 15px 0 0;
+      min-width: 70px;
+    }
+    li:not(:last-of-type) {
+      border-bottom: 1px solid white;
+    }
+    li p {
+        font-family: arial,sans-serif;
+        font-size: 14px;
+        color: silver;
+    }
+
+    li {
+      padding: 10px;      
+      overflow: auto;
+    }
+
+    li:hover {
+      background: #333;
+      cursor: pointer;
+    }
+    
+    .li-parent {
+      padding: 0rem;
+      display: flex;
+    }
+
+    .li-left {
+      min-width: 75px;
+      outline: none;
+      font-family: arial,sans-serif;
+      font-size: 14px;
+      color: white;
+    }
+
+    .li-right {
+      padding-left: .5rem;
+      display: inline-block;
+      font-family: arial,sans-serif;
+      font-size: 14px;
+      color: silver;
+    }
+    
+    .header-img {
+      height:16px;
+      margin-right:6px;
+    }
+    
+    .header-info {
+      vertical-align: top;
+    }
+
+    #dom-overlay-root {
+        pointer-events: none;
+    }
+    #dom-overlay-root > * {
+        pointer-events: auto;
+    }
+    .dialog-overlay {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+    .dialog-box {
+        background-color: #222;
+        padding: 25px;
+        border: 1px solid #DADADA;
+        border-radius: 8px;
+        text-align: center;
+        max-width: 90%;
+        width: 350px;
+    }
+    /* ADDED: Style for the instruction video */
+    .dialog-box video {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    .dialog-box p {
+        margin-top: 0;
+        font-family: arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .dialog-box button {
+        padding: 10px 20px;
+        border-radius: 4px;
+        border: 1px solid #DADADA;
+        background: #333;
+        color: white;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    
   </style>
-
+  
 </head>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-<body>
-  <script type="module">
-    import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
-    import * as THREE from 'three';
+  gtag('config', 'G-3SV7FBYSCQ');
+</script>
+<body class="body">
+<script>
+const hideXr = () => {
+    const index = 'xr.html'
+    window.location.href = index
+}
+
+const topFunction = () => {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+const changeXr = () => {
+    const params = new URLSearchParams(location.search);
+    if (params.has('xr')) {
+        params.set('xr', 'vr');
+        location.search = params.toString();
+    }
+}
+</script>
+<div id="list"></div>
+<div id="xr" class="xr" style="display: none;"></div>
+<div id="back" class="back" style="display: none;"><div onclick="hideXr()" class="hand">Back</div></div>
+<div id="switch" class="switch hand" style="display: none;" onclick="changeXr()">View in Meta Headset</div>
+
+<div id="dom-overlay-root">
+    <div id="dialog-container" class="dialog-overlay">
+        <div class="dialog-box">
+            <video id="instruction-video" loop muted playsinline>
+                <source src="assets/data/ar_guide.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p id="dialog-message">Your message goes here.</p>
+            <button id="dialog-close-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+
+<script type="module">
+import * as GaussianSplats3D from 'gaussian-splats-3d';
+
+const listElement = document.getElementById('list')
+const xrElement = document.getElementById('xr')
+const back = document.getElementById('back')
+const switchXr = document.getElementById('switch')
+
+const dialogContainer = document.getElementById('dialog-container');
+const dialogMessage = document.getElementById('dialog-message');
+const dialogCloseBtn = document.getElementById('dialog-close-btn');
+const instructionVideo = document.getElementById('instruction-video'); // ADDED: Video element reference
+
+// MODIFIED: Event listener to pause video on close
+dialogCloseBtn.addEventListener('click', () => {
+    dialogContainer.style.display = 'none';
+    instructionVideo.pause(); 
+});
+
+const loadScene = (sceneId, xr) => {
+    const scene = data.find(f => f.id === sceneId)
+    if (!scene) {
+        return
+    }
+    listElement.style.display = 'none'  
+    xrElement.style.display = ''
+    switchXr.style.display = ''
     const viewer = new GaussianSplats3D.Viewer({
-      'initialCameraLookAt': [-79.86954, -22.87447, 18.19079],
-      'webXRMode': GaussianSplats3D.WebXRMode.AR
+        rootElement: xrElement,
+        cameraUp: [-0.03, 0.07, -0.99],
+        initialCameraPosition: [4.5,-5.57,-5.34],
+        initialCameraLookAt: [-0.06, -0.17, -1.58],
+        sharedMemoryForWorkers: true,
+        gpuAcceleratedSort: true,
+        transformAr: scene.transformAr,
+        transformVr: scene.transformVr,
+        transform: scene.transform,
+        backgroundColor: scene.backgroundColor ?? 0x000000,
+        vrAutorotation: scene.vrAutorotation ?? true,
+        xr: xr,
+        scenes: data,
+
+        xrSessionInit: {
+            optionalFeatures: ['dom-overlay', 'hit-test', 'local-floor'],
+            domOverlay: {
+                root: document.getElementById('dom-overlay-root')
+            }
+        }
     });
-    let path = 'https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/assets/data/UV_FST/model-3.splat';
-    viewer.addSplatScene(path, {
-        'scale': [1,1,1],
-        'position': [-71.70572, -24.37062, 21.50605]
-    })
+    viewer.loadFile(scene.url)
     .then(() => {
         viewer.start();
-    });
-  </script>
-</body>
+        topFunction();
 
+        // MODIFIED: Show dialog and play video
+        dialogMessage.textContent = `Tap on "Start AR" and scan the floor till you see a circular marker. Point in the direction you want to place the product and then tap on the marker to place. Keep moving till the product is visible completely.`;
+        dialogContainer.style.display = 'flex';
+        instructionVideo.play();
+    });
+
+}
+const data = [
+    { id: '1209_Brown', name: '1209 Brown', url: 'assets/data/1209_Brown/1209_Brown.ply' },
+    { id: '1209_Deluxe_Black', name: '1209 Deluxe Black', url: 'assets/data/1209_DeluxeBlack/1209_DeluxeBlack.ply' },
+    { id: '1209_Olivegreen', name: '1209 Olivegreen', url: 'assets/data/1209_Olivegreen/1209_Olivegreen.ply' },
+    { id: '1209_Orange', name: '1209 Orange', url: 'assets/data/1209_Orange/1209_Orange.ply' },
+    { id: '1209_Red', name: '1209 Red', url: 'assets/data/1209_Red/1209_Red.ply' },
+    { id: '1209_Sand', name: '1209 Sand', url: 'assets/data/1209_Sand/1209_Sand.ply' },
+    { id: '2101_Gold', name: '2101 Gold', url: 'assets/data/2101_Gold/2101_Gold.ply' },
+    { id: '2101_White', name: '2101 White', url: 'assets/data/2101_White/2101_White.ply' },
+    { id: '2109_Black', name: '2109 Black', url: 'assets/data/2109_Black/2109_Black.ply' },
+    { id: '2109_Brown', name: '2109 Brown', url: 'assets/data/2109_Brown/2109_Brown.ply' },
+    { id: '2109_Orange', name: '2109 Orange', url: 'assets/data/2109_Orange/2109_Orange.ply' },
+    { id: '2109_Red', name: '2109 Red', url: 'assets/data/2109_Red/2109_Red.ply' },
+    { id: '2109_S_Grey', name: '2109 S Grey', url: 'assets/data/2109_SGrey/2109_SGrey.ply' },
+    { id: '2109_Sand', name: '2109 Sand', url: 'assets/data/2109_Sand/2109_Sand.ply' },
+    { id: '2109_White', name: '2109 White', url: 'assets/data/2109_White/2109_White.ply' },
+    { id: '2109_Yellow', name: '2109 Yellow', url: 'assets/data/2109_Yellow/2109_Yellow.ply' },
+    { id: '2151_Gold', name: '2151 Gold', url: 'assets/data/2151_Gold/2151_Gold.ply' },
+    { id: '2151_White', name: '2151 White', url: 'assets/data/2151_White/2151_White.ply' },
+    { id: '2277_Black', name: '2277 Black', url: 'assets/data/2277_Black/2277_Black.ply' },
+    { id: '2277_Coffee', name: '2277 Coffee', url: 'assets/data/2277_Coffee/2277_Coffee.ply' },
+    { id: '2277_OliveGreen', name: '2277 OliveGreen', url: 'assets/data/2277_OliveGreen/2277_OliveGreen.ply' },
+    { id: '2277_S_Grey', name: '2277 S Grey', url: 'assets/data/2277_SGrey/2277_SGrey.ply' },
+    { id: '2277_Sand', name: '2277 Sand', url: 'assets/data/2277_Sand/2277_Sand.ply' },
+    { id: '2277_WeatherBrown', name: '2277 WeatherBrown', url: 'assets/data/2277_WeatherBrown/2277_WeatherBrown.ply' },
+    { id: '2277_White', name: '2277 White', url: 'assets/data/2277_White/2277_White.ply' },
+    { id: '5103_Brown', name: '5103 Brown', url: 'assets/data/5103_Brown/5103_Brown.ply' },
+    { id: '5103_Green', name: '5103 Green', url: 'assets/data/5103_Green/5103_Green.ply' },
+    { id: '5103_Orange', name: '5103 Orange', url: 'assets/data/5103_Orange/5103_Orange.ply' },
+    { id: '5103_Red', name: '5103 Red', url: 'assets/data/5103_Red/5103_Red.ply' },
+    { id: '5103_White', name: '5103 White', url: 'assets/data/5103_White/5103_White.ply' },
+    { id: '5106_Brown', name: '5106 Brown', url: 'assets/data/5106_Brown/5106_Brown.ply' },
+    { id: '5106_Green', name: '5106 Green', url: 'assets/data/5106_Green/5106_Green.ply' },
+    { id: '5106_Orange', name: '5106 Orange', url: 'assets/data/5106_Orange/5106_Orange.ply' },
+    { id: '5106_Red', name: '5106 Red', url: 'assets/data/5106_Red/5106_Red.ply' },
+    { id: '5106_White', name: '5106 White', url: 'assets/data/5106_White/5106_White.ply' },
+    { id: '5115_Brown___Gold', name: '5115 Brown   Gold', url: 'assets/data/5115_BrownGold/5115_BrownGold.ply' },
+    { id: '5115_Brown___Ivory', name: '5115 Brown   Ivory', url: 'assets/data/5115_BrownIvory/5115_BrownIvory.ply' },
+    { id: '5115_Coffee___C_Brown', name: '5115 Coffee   C Brown', url: 'assets/data/5115_CoffeeCBrown/5115_CoffeeCBrown.ply' },
+    { id: '5115_White___Gold', name: '5115 White   Gold', url: 'assets/data/5115_WhiteGold/5115_WhiteGold.ply' },
+    { id: '5115_White___S_grey', name: '5115 White   S grey', url: 'assets/data/5115_WhiteSgrey/5115_WhiteSgrey.ply' },
+    { id: '5202_Brown', name: '5202 Brown', url: 'assets/data/5202_Brown/5202_Brown.ply' },
+    { id: '5202_Gold', name: '5202 Gold', url: 'assets/data/5202_Gold/5202_Gold.ply' },
+    { id: '5202_Green', name: '5202 Green', url: 'assets/data/5202_Green/5202_Green.ply' },
+    { id: '5202_White', name: '5202 White', url: 'assets/data/5202_White/5202_White.ply' },
+    { id: '5202Luxury_Black', name: '5202Luxury Black', url: 'assets/data/5202Luxury_Black/5202Luxury_Black.ply' },
+    { id: '5205_Black', name: '5205 Black', url: 'assets/data/5205_Black/5205_Black.ply' },
+    { id: '5205_Brown', name: '5205 Brown', url: 'assets/data/5205_Brown/5205_Brown.ply' },
+    { id: '5205_Gold', name: '5205 Gold', url: 'assets/data/5205_Gold/5205_Gold.ply' },
+    { id: '5205_OliveGreen', name: '5205 OliveGreen', url: 'assets/data/5205_OliveGreen/5205_OliveGreen.ply' },
+    { id: '5205_Orange', name: '5205 Orange', url: 'assets/data/5205_Orange/5205_Orange.ply' },
+    { id: '5205_Red', name: '5205 Red', url: 'assets/data/5205_Red/5205_Red.ply' },
+    { id: '5205_S_Grey', name: '5205 S Grey', url: 'assets/data/5205_SGrey/5205_SGrey.ply' },
+    { id: '5205_White', name: '5205 White', url: 'assets/data/5205_White/5205_White.ply' },
+    { id: '5214_Brown', name: '5214 Brown', url: 'assets/data/5214_Brown/5214_Brown.ply' },
+    { id: '5214_D_R_Beige', name: '5214 D R Beige', url: 'assets/data/5214_DRBeige/5214_DRBeige.ply' },
+    { id: '5214_OliveGreen', name: '5214 OliveGreen', url: 'assets/data/5214_OliveGreen/5214_OliveGreen.ply' },
+    { id: '5214_White', name: '5214 White', url: 'assets/data/5214_White/5214_White.ply' },
+    { id: '5223_DarkBlue', name: '5223 DarkBlue', url: 'assets/data/5223_DarkBlue/5223_DarkBlue.ply' },
+    { id: '5223_Pink', name: '5223 Pink', url: 'assets/data/5223_Pink/5223_Pink.ply' },
+    { id: '5223_Red', name: '5223 Red', url: 'assets/data/5223_Red/5223_Red.ply' },
+    { id: '5223_Yellow', name: '5223 Yellow', url: 'assets/data/5223_Yellow/5223_Yellow.ply' },
+    { id: '5226_BlueandRed', name: '5226 BlueandRed', url: 'assets/data/5226_BlueandRed/5226_BlueandRed.ply' },
+    { id: '5226_Green___Gold', name: '5226 Green   Gold', url: 'assets/data/5226_GreenGold/5226_GreenGold.ply' },
+    { id: '5226_Orange___Gold', name: '5226 Orange   Gold', url: 'assets/data/5226_OrangeGold/5226_OrangeGold.ply' },
+    { id: '5226_Red___Yellow', name: '5226 Red   Yellow', url: 'assets/data/5226_RedYellow/5226_RedYellow.ply' },
+    { id: '5229_Red___Yellow', name: '5229 Red   Yellow', url: 'assets/data/5229_RedYellow/5229_RedYellow.ply' },
+    { id: '5229_Yellow___Red', name: '5229 Yellow   Red', url: 'assets/data/5229_YellowRed/5229_YellowRed.ply' },
+    { id: '5232_Ivory', name: '5232 Ivory', url: 'assets/data/5232_Ivory/5232_Ivory.ply' },
+    { id: '5238_Brown', name: '5238 Brown', url: 'assets/data/5238_Brown/5238_Brown.ply' },
+    { id: '5238_Green', name: '5238 Green', url: 'assets/data/5238_Green/5238_Green.ply' },
+    { id: '5238_Orange', name: '5238 Orange', url: 'assets/data/5238_Orange/5238_Orange.ply' },
+    { id: '5238_Pink', name: '5238 Pink', url: 'assets/data/5238_Pink/5238_Pink.ply' },
+    { id: '5238_Red', name: '5238 Red', url: 'assets/data/5238_Red/5238_Red.ply' },
+    { id: '5238_Sand', name: '5238 Sand', url: 'assets/data/5238_Sand/5238_Sand.ply' },
+    { id: '5238_SummerBlue', name: '5238 SummerBlue', url: 'assets/data/5238_SummerBlue/5238_SummerBlue.ply' },
+    { id: '5238_Yellow', name: '5238 Yellow', url: 'assets/data/5238_Yellow/5238_Yellow.ply' },
+    { id: '5253_Black___Biscuit', name: '5253 Black   Biscuit', url: 'assets/data/5253_BlackBiscuit/5253_BlackBiscuit.ply' },
+    { id: '5253_Black___Orange', name: '5253 Black   Orange', url: 'assets/data/5253_BlackOrange/5253_BlackOrange.ply' },
+    { id: '5253_Brown___Coffee', name: '5253 Brown   Coffee', url: 'assets/data/5253_BrownCoffee/5253_BrownCoffee.ply' },
+    { id: '5253_Olive_Green___White', name: '5253 Olive Green   White', url: 'assets/data/5253_OliveGreenWhite/5253_OliveGreenWhite.ply' },
+    { id: '5253_Red___white', name: '5253 Red   white', url: 'assets/data/5253_Redwhite/5253_Redwhite.ply' },
+    { id: '5253_S_Grey___White', name: '5253 S Grey   White', url: 'assets/data/5253_SGreyWhite/5253_SGreyWhite.ply' },
+    { id: '5253_T_Blue___White', name: '5253 T Blue   White', url: 'assets/data/5253_TBlueWhite/5253_TBlueWhite.ply' },
+    { id: '5253_White___S_Blue', name: '5253 White   S Blue', url: 'assets/data/5253_WhiteSBlue/5253_WhiteSBlue.ply' },
+    { id: '6003_Black___white', name: '6003 Black   white', url: 'assets/data/6003_Blackwhite/6003_Blackwhite.ply' },
+    { id: '8103_White', name: '8103 White', url: 'assets/data/8103_White/8103_White.ply' },
+    { id: '9508_Brown', name: '9508 Brown', url: 'assets/data/9508_Brown/9508_Brown.ply' },
+    { id: '9508_Gold', name: '9508 Gold', url: 'assets/data/9508_Gold/9508_Gold.ply' },
+    { id: '9508_Olive_green___Black', name: '9508 Olive green   Black', url: 'assets/data/9508_OlivegreenBlack/9508_OlivegreenBlack.ply' },
+    { id: '9508_Olive_Green', name: '9508 Olive Green', url: 'assets/data/9508_OliveGreen/9508_OliveGreen.ply' },
+    { id: '9508_Red___Black', name: '9508 Red   Black', url: 'assets/data/9508_RedBlack/9508_RedBlack.ply' },
+    { id: '9508_Red', name: '9508 Red', url: 'assets/data/9508_Red/9508_Red.ply' },
+    { id: '9508_White', name: '9508 White', url: 'assets/data/9508_White/9508_White.ply' },
+    { id: '9516_Brown', name: '9516 Brown', url: 'assets/data/9516_Brown/9516_Brown.ply' },
+    { id: '9525_Brown___P_Beige', name: '9525 Brown   P Beige', url: 'assets/data/9525_BrownPBeige/9525_BrownPBeige.ply' },
+    { id: '9525_CBrownandCoffee', name: '9525 CBrownandCoffee', url: 'assets/data/9525_CBrownandCoffee/9525_CBrownandCoffee.ply' },
+    { id: '9525_White___Olive_Green', name: '9525 White   Olive Green', url: 'assets/data/9525_WhiteOliveGreen/9525_WhiteOliveGreen.ply' },
+    { id: '9525_White___S__Grey', name: '9525 White   S  Grey', url: 'assets/data/9525_WhiteSGrey/9525_WhiteSGrey.ply' },
+    { id: '9612_Blue___Red', name: '9612 Blue   Red', url: 'assets/data/9612_BlueRed/9612_BlueRed.ply' },
+    { id: '9612_Yellow___Red', name: '9612 Yellow   Red', url: 'assets/data/9612_YellowRed/9612_YellowRed.ply' },
+    { id: '9616_red', name: '9616 red', url: 'assets/data/9616_red/9616_red.ply' },
+    { id: '9999B_Red___Black', name: '9999B Red   Black', url: 'assets/data/9999B_RedBlack/9999B_RedBlack.ply' },
+    { id: '9999S_Red___Black', name: '9999S Red   Black', url: 'assets/data/9999S_RedBlack/9999S_RedBlack.ply' },
+    { id: 'Marvello11_Black', name: 'Marvello11 Black', url: 'assets/data/Marvello11_Black/Marvello11_Black.ply' },
+    { id: 'Marvello11_Blue', name: 'Marvello11 Blue', url: 'assets/data/Marvello11_Blue/Marvello11_Blue.ply' },
+    { id: 'Marvello11_Brown', name: 'Marvello11 Brown', url: 'assets/data/Marvello11_Brown/Marvello11_Brown.ply' },
+    { id: 'Marvello11_Green', name: 'Marvello11 Green', url: 'assets/data/Marvello11_Green/Marvello11_Green.ply' },
+    { id: 'Marvello11_Orange', name: 'Marvello11 Orange', url: 'assets/data/Marvello11_Orange/Marvello11_Orange.ply' },
+    { id: 'Marvello11_Red', name: 'Marvello11 Red', url: 'assets/data/Marvello11_Red/Marvello11_Red.ply' },
+    { id: 'Phoenix_ArmyGrey', name: 'Phoenix ArmyGrey', url: 'assets/data/Phoenix_ArmyGrey/Phoenix_ArmyGrey.ply' },
+    { id: 'Phoenix_Coffee', name: 'Phoenix Coffee', url: 'assets/data/Phoenix_Coffee/Phoenix_Coffee.ply' },
+    { id: 'Phoenix_Royal_Yellow', name: 'Phoenix Royal Yellow', url: 'assets/data/Phoenix_RoyalYellow/Phoenix_RoyalYellow.ply' },
+    { id: 'Phoenix_Teal_Green', name: 'Phoenix Teal Green', url: 'assets/data/Phoenix_TealGreen/Phoenix_TealGreen.ply' },
+    { id: 'Phoenix_White', name: 'Phoenix White', url: 'assets/data/Phoenix_White/Phoenix_White.ply' },
+].map(scene => {
+    return {
+        ...scene,
+        description: '',
+        size: '12MB',
+        img: 'webxr/gs/assets/mutt.jpg',
+        transform: {
+            cameraLookAt: [ -0.00361, -0.20809, 0.02977 ],
+            scale: { x: 5.0, y: 5.0, z: 5.0 },
+            position: { x: 0.0, y: 0.0, z: 0.0 },
+            rotate: { x: 90, y: 0.0, z: 0.0 }
+        },
+        transformAr: {
+            scale: { x: 1.5, y: 1.5, z: 1.5 },
+            position: { x: 0.0, y: 0.0, z: 0.0 },
+            rotate: { x: 90, y: 180.0, z: 0.0 }
+        },
+        transformVr: {
+            scale: { x: 1.5, y: 1.5, z: 1.5 },
+            position: { x: 0.0, y: 0.0, z: 0.0 },
+            rotate: { x: 90, y: 180.0, z: 0.0 }
+        }
+    };
+});
+
+
+const openScene = (scene, xr, vid = '') => {
+    const index = 'xr.html'
+    if (vid != '') {
+            window.location.href = vid
+    }
+    else if (!scene) {
+        window.location.href = index
+    }
+    else {
+        window.location.href = `${index}?scene=${scene}&xr=${xr}`
+    }
+}
+
+const loadData = () => {
+    let inner = ''
+    if (data && data.length > 0){
+        for (const scene of data) {
+            if (scene.hideFromMenu) {
+                continue
+            }                       
+            inner += `<li id="link-${scene.id}-${navigator.userAgent.includes('Quest') ? 'vr' : 'ar'}"><img src="${scene.img}"/><h3>${scene.name}</h3>
+            <div class="li-parent">
+              <div class="li-left">Size: ${scene.size}</div>
+              <div class="li-right">${scene.description}</div>
+            </div>
+            </li>`
+        }
+    }
+    const header = `<div class="header"><h2>Gaussian Splatting in AR/VR</h2>`
+    listElement.innerHTML = `${header}<div><ul>${inner}</ul></div>`
+    if (data && data.length > 0){
+        for (const scene of data) {
+            const elementAr = document.getElementById(`link-${scene.id}-ar`)
+            if (elementAr) {
+                elementAr.onclick = () => { scene.v ? openScene(scene.id,'ar',scene.v) : openScene(scene.id,'ar') }
+            }
+            const elementVr = document.getElementById(`link-${scene.id}-vr`)
+            if (elementVr) {
+                elementVr.onclick = () => { scene.v ? openScene(scene.id,'vr',scene.v) : openScene(scene.id,'vr') }
+            }
+        }
+    }
+}
+const params = new URLSearchParams(location.search);
+if (params.has('scene')) {
+    const scene = params.get('scene')
+    const xr = params.has('xr') ? params.get('xr') : ''
+    loadScene(scene, xr)
+} else {
+    loadData();
+}
+
+</script>
+</body>
 </html>

@@ -106,30 +106,19 @@
       const modelViewer = document.querySelector("#ar-model-viewer");
       const arButton = document.querySelector("#viewButton");
       const isAndroid = /android/i.test(navigator.userAgent);
-
-      // Wait for the AR model to load
       modelViewer.addEventListener('load', () => {
-        // Check if the device is AR-capable
-        if (modelViewer.canActivateAR) {
-          // If it is, show the AR button
-          arButton.style.display = 'block';
-        }
+        if (modelViewer.canActivateAR) { arButton.style.display = 'block'; }
       });
-
-      // When the user clicks the AR button...
       arButton.addEventListener('click', () => {
         if (isAndroid) {
-          // For Android, we construct an intent URL to launch Scene Viewer.
-          // This effectively opens the AR experience in its own application window.
-          const modelSrc = modelViewer.src;
-          // The file URL must be absolute for the intent to work correctly.
-          const absoluteSrc = new URL(modelSrc, window.location.href).href;
-          const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
-          // Launch the intent.
-          window.location.href = intent;
+          //const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
+          //const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+          //window.location.href = intent;
+          window.location.href = 'xr.html?scene=1209_Brown&xr=ar';
         } else {
-          // For other devices (like iOS for Quick Look), use the default activation.
-          modelViewer.activateAR();
+          //modelViewer.activateAR();
+          alert('AR is coming soon to iPhones. Please use an Android device for now.');
+
         }
       });
   </script>
