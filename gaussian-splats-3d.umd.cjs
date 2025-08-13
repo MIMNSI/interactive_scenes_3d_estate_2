@@ -3181,7 +3181,7 @@
 
             // How far you can dolly in and out ( PerspectiveCamera only ) Products
             this.minDistance = 0.7;
-            this.maxDistance = 2.2;
+            this.maxDistance = 2.0;
 
             // How far you can zoom in and out ( OrthographicCamera only )
             this.minZoom = 0;
