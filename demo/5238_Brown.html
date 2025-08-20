@@ -28,7 +28,7 @@
       border-radius: 20px; font-size: 14px; z-index: 10;
     }
     #viewButton {
-      display: none;
+      /*display: none;*/
       position: fixed; bottom: calc(100px + env(safe-area-inset-bottom)); left: 50%;
       transform: translateX(-50%); background-color: #007AFF; color: white;
       font-size: 16px; font-weight: bold; padding: 15px 25px; border: none;
@@ -80,13 +80,13 @@
       });
       arButton.addEventListener('click', () => {
         if (isAndroid) {
-          //const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
-          //const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
-          //window.location.href = intent;
-          window.location.href = 'xr.html?scene=5238_Brown&xr=ar';
+          const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
+          const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+          window.location.href = intent;
+          //window.location.href = 'xr.html?scene=5238_Brown&xr=ar';
         } else {
-          //modelViewer.activateAR();
-          alert('AR is coming soon to iPhones. Please use an Android device for now.');
+          modelViewer.activateAR();
+          //alert('AR is coming soon to iPhones. Please use an Android device for now.');
 
         }
       });

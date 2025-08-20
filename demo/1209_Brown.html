@@ -40,7 +40,7 @@
     }
 
     #viewButton {
-      display: none;
+      /*display: none;*/
       /* The button is hidden by default. JS will show it if AR is available. */
       position: fixed;
       bottom: calc(100px + env(safe-area-inset-bottom));
@@ -112,13 +112,13 @@
       });
       arButton.addEventListener('click', () => {
         if (isAndroid) {
-          //const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
-          //const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
-          //window.location.href = intent;
-          window.location.href = 'xr.html?scene=1209_Brown&xr=ar';
+          const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
+          const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+          window.location.href = intent;
+          //window.location.href = 'xr.html?scene=1209_Brown&xr=ar';
         } else {
-          //modelViewer.activateAR();
-          alert('AR is coming soon to iPhones. Please use an Android device for now.');
+          modelViewer.activateAR();
+          //alert('AR is coming soon to iPhones. Please use an Android device for now.');
 
         }
       });
