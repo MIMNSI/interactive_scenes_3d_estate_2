@@ -334,31 +334,28 @@ const loadScene = (sceneId, xr) => {
         initialCameraPosition: [4.5,-5.57,-5.34],
         initialCameraLookAt: [-0.06, -0.17, -1.58],
         sharedMemoryForWorkers: false,
-        gpuAcceleratedSort: false,
-        transformAr: scene.transformAr,
-        transformVr: scene.transformVr,
-        transform: scene.transform,
-        backgroundColor: scene.backgroundColor ?? 0x000000,
-        vrAutorotation: scene.vrAutorotation ?? true,
-        xr: xr,
-        scenes: data,
+		gpuAcceleratedSort: false,
+		transformAr: scene.transformAr,
+		transformVr: scene.transformVr,
+		transform: scene.transform,
+		backgroundColor: scene.backgroundColor ?? 0x000000,
+		vrAutorotation: scene.vrAutorotation ?? true,
+		xr: xr,
+		scenes: data
+        
 
-        xrSessionInit: {
-            optionalFeatures: ['dom-overlay', 'hit-test', 'local-floor'],
-            domOverlay: {
-                root: document.getElementById('dom-overlay-root')
-            }
-        }
     });
     viewer.loadFile(scene.url)
     .then(() => {
         viewer.start();
         topFunction();
+        
 
         // MODIFIED: Show dialog and play video
         dialogMessage.textContent = `Tap on "Start AR" and scan the floor till you see a circular marker. Point in the direction you want to place the product and then tap on the marker to place. Keep moving till the product is visible completely.`;
         dialogContainer.style.display = 'flex';
         instructionVideo.play();
+        
     });
 
 }
@@ -398,7 +395,7 @@ const data = [
     { id: '5106_Orange', name: '5106 Orange', url: 'assets/data/5106_Orange/5106_Orange.ply' },
     { id: '5106_Red', name: '5106 Red', url: 'assets/data/5106_Red/5106_Red.ply' },
     { id: '5106_White', name: '5106 White', url: 'assets/data/5106_White/5106_White.ply' },
-    { id: '5115_Brown___Gold', name: '5115 Brown   Gold', url: 'assets/data/5115_BrownGold/5115_BrownGold.ply' },
+    { id: '5115_Brown___Gold', name: '5115 Brown   Gold', url: 'assets/data/5115_BrownGold/5115_BrownGold.splat' },
     { id: '5115_Brown___Ivory', name: '5115 Brown   Ivory', url: 'assets/data/5115_BrownIvory/5115_BrownIvory.ply' },
     { id: '5115_Coffee___C_Brown', name: '5115 Coffee   C Brown', url: 'assets/data/5115_CoffeeCBrown/5115_CoffeeCBrown.ply' },
     { id: '5115_White___Gold', name: '5115 White   Gold', url: 'assets/data/5115_WhiteGold/5115_WhiteGold.ply' },
