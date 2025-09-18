@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js xr - dragging gaussian splats</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        </head>
+	<body>
+
+		<div id="info">
+			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> xr - dragging gaussian splats
+		</div>
+
+		<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/",
+            "@mkkellogg/gaussian-splats-3d": "https://unpkg.com//@mkkellogg/gaussian-splats-3d@0.1.5/gaussian-splats-3d.module.js"
+        }
+    }
+</script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+            import * as SPLAT from '@mkkellogg/gaussian-splats-3d';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { XRButton } from 'three/addons/webxr/XRButton.js';
+			import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+
+			let container;
+			let camera, scene, renderer;
+			let controller1, controller2;
+			let controllerGrip1, controllerGrip2;
+
+			let raycaster;
+
+            let controls;
+
+            // This group will hold our invisible interaction box
+			const interactiveGroup = new THREE.Group();
+            
+            // We'll store the splatMesh and its proxy here to access them later
+            let splatMesh, interactionProxyBox;
+
+			init();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x808080 );
+
+				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 100 );
+				camera.position.set( 0, 1.6, 3 );
+
+				controls = new OrbitControls( camera, container );
+				controls.target.set( 0, 1.6, 0 );
+				controls.update();
+
+				const floorGeometry = new THREE.PlaneGeometry( 6, 6 );
+				const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.6, metalness: 0.1 });
+				const floor = new THREE.Mesh( floorGeometry, floorMaterial );
+				floor.rotation.x = - Math.PI / 2;
+				floor.receiveShadow = true;
+				scene.add( floor );
+
+				scene.add( new THREE.HemisphereLight( 0xbcbcbc, 0xa5a5a5, 3 ) );
+
+				const light = new THREE.DirectionalLight( 0xffffff, 3 );
+				light.position.set( 0, 6, 0 );
+				light.castShadow = true;
+				scene.add( light );
+
+				scene.add( interactiveGroup );
+
+                // Load the Gaussian Splat file.
+                // Using a sample 'truck' .splat file for demonstration.
+                const splatLoader = new SPLAT.Loader();
+                splatLoader.load('https://antimatter15.com/splat/truck.splat', (splat) => {
+                    splatMesh = splat; // Store the splat mesh
+                    splatMesh.position.set(0, 1.6, 0); // Position it in the scene
+                    splatMesh.scale.setScalar(2.0); // Scale it up a bit
+                    scene.add(splatMesh);
+
+                    // Create an invisible proxy box for raycaster interaction
+                    const box = new THREE.Box3().setFromObject(splatMesh);
+                    const size = box.getSize(new THREE.Vector3());
+                    const center = box.getCenter(new THREE.Vector3());
+
+                    const proxyGeometry = new THREE.BoxGeometry(size.x, size.y, size.z);
+                    const proxyMaterial = new THREE.MeshBasicMaterial({ visible: false });
+
+                    interactionProxyBox = new THREE.Mesh(proxyGeometry, proxyMaterial);
+                    interactionProxyBox.position.copy(center);
+                    
+                    // Link the splat mesh to the proxy box for easy access during interaction
+                    interactionProxyBox.userData.splatMesh = splatMesh;
+
+                    // Add the invisible box to the group that the raycaster checks
+                    interactiveGroup.add(interactionProxyBox);
+                });
+
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setAnimationLoop( animate );
+				renderer.shadowMap.enabled = true;
+				renderer.xr.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				document.body.appendChild( XRButton.createButton( renderer ) );
+
+				// controllers
+				controller1 = renderer.xr.getController( 0 );
+				controller1.addEventListener( 'selectstart', onSelectStart );
+				controller1.addEventListener( 'selectend', onSelectEnd );
+				scene.add( controller1 );
+
+				controller2 = renderer.xr.getController( 1 );
+				controller2.addEventListener( 'selectstart', onSelectStart );
+				controller2.addEventListener( 'selectend', onSelectEnd );
+				scene.add( controller2 );
+
+				const controllerModelFactory = new XRControllerModelFactory();
+
+				controllerGrip1 = renderer.xr.getControllerGrip( 0 );
+				controllerGrip1.add( controllerModelFactory.createControllerModel( controllerGrip1 ) );
+				scene.add( controllerGrip1 );
+
+				controllerGrip2 = renderer.xr.getControllerGrip( 1 );
+				controllerGrip2.add( controllerModelFactory.createControllerModel( controllerGrip2 ) );
+				scene.add( controllerGrip2 );
+
+				const geometry = new THREE.BufferGeometry().setFromPoints( [ new THREE.Vector3( 0, 0, 0 ), new THREE.Vector3( 0, 0, - 1 ) ] );
+
+				const line = new THREE.Line( geometry );
+				line.name = 'line';
+				line.scale.z = 5;
+
+				controller1.add( line.clone() );
+				controller2.add( line.clone() );
+
+				raycaster = new THREE.Raycaster();
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function onSelectStart( event ) {
+				const controller = event.target;
+				const intersections = getIntersections( controller );
+
+				if ( intersections.length > 0 ) {
+					const intersection = intersections[ 0 ];
+                    // The intersected object is the proxy box. We want to grab the splat mesh.
+					const objectToGrab = intersection.object.userData.splatMesh;
+                    
+                    if (objectToGrab) {
+                        // Attach the actual splat mesh to the controller
+					    controller.attach( objectToGrab );
+					    controller.userData.selected = objectToGrab;
+                    }
+				}
+				controller.userData.targetRayMode = event.data.targetRayMode;
+			}
+
+			function onSelectEnd( event ) {
+				const controller = event.target;
+				if ( controller.userData.selected !== undefined ) {
+                    // The selected object is the splat mesh
+					const object = controller.userData.selected;
+
+                    // When we release, we re-parent it back to the scene.
+                    scene.attach(object);
+                    // We also need to move our invisible proxy box to the new location.
+                    if (interactionProxyBox) {
+                        const box = new THREE.Box3().setFromObject(object);
+                        const center = box.getCenter(new THREE.Vector3());
+                        const size = box.getSize(new THREE.Vector3());
+                        
+                        // Update position and scale in case the splat was scaled
+                        interactionProxyBox.position.copy(center);
+                        interactionProxyBox.scale.copy(object.scale);
+                    }
+					controller.userData.selected = undefined;
+				}
+			}
+
+			function getIntersections( controller ) {
+				controller.updateMatrixWorld();
+				raycaster.setFromXRController( controller );
+				return raycaster.intersectObjects( interactiveGroup.children, false ); // This will only check against the proxy box
+			}
+
+			function animate() {
+                // Shorten the controller's laser pointer if it's pointing at the object
+                if (controller1.visible) {
+                    const intersections1 = getIntersections(controller1);
+                    const line1 = controller1.getObjectByName('line');
+                    if (intersections1.length > 0) {
+                        line1.scale.z = intersections1[0].distance;
+                    } else {
+                        line1.scale.z = 5;
+                    }
+                }
+                if (controller2.visible) {
+                    const intersections2 = getIntersections(controller2);
+                    const line2 = controller2.getObjectByName('line');
+                    if (intersections2.length > 0) {
+                        line2.scale.z = intersections2[0].distance;
+                    } else {
+                        line2.scale.z = 5;
+                    }
+                }
+
+				renderer.render( scene, camera );
+			}
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Garden",
+    "path": "assets/data/garden/garden_high.ksplat",
+    "thumbnail": "assets/images/garden.png",
+    "cameraUp": [0, -1, -0.54],
+    "initialCameraPosition": [-3.15634, -0.16946, -0.51552],
+    "initialCameraLookAt": [1.52976, 2.27776, 1.65898],
+    "shDegree": 2
+  },
+  {
+    "name": "Truck",
+    "path": "assets/data/truck/truck_high.ksplat",
+    "thumbnail": "assets/images/truck.png",
+    "cameraUp": [0, -1, -0.17],
+    "initialCameraPosition": [-5, -1, -1],
+    "initialCameraLookAt": [-1.72477, 0.05395, -0.00147],
+    "shDegree": 2
+  }
+]
