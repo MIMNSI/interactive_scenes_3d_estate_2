@@ -80,13 +80,13 @@
       });
       arButton.addEventListener('click', () => {
         if (isAndroid) {
-          //const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
-          //const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
-          //window.location.href = intent;
-          window.location.href = 'xr.html?scene=2277_S_Grey&xr=ar';
+          const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
+          const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
+          window.location.href = intent;
+          //window.location.href = 'xr.html?scene=2277_S_Grey&xr=ar';
         } else {
-          //modelViewer.activateAR();
-          alert('AR is coming soon to iPhones. Please use an Android device for now.');
+          modelViewer.activateAR();
+          //alert('AR is coming soon to iPhones. Please use an Android device for now.');
 
         }
       });

@@ -5,7 +5,7 @@
   <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
   <meta content="ie=edge" http-equiv="x-ua-compatible"/>
   <title>
-   3D Gaussian Splat Demo - 2109_S_Grey
+   3D Gaussian Splat Demo - 5106_Red
   </title>
   <script src="js/util.js" type="text/javascript">
   </script>
@@ -49,11 +49,11 @@
 
     const viewer = new GaussianSplats3D.Viewer({
         'cameraUp': [0.01896, -0.99955, -0.02341],
-        'initialCameraPosition': [0.03922, -0.84221, 1.05325],
+        'initialCameraPosition': [-0.98641, -0.83035, -0.28385],
         'initialCameraLookAt': [-0.00361, -0.20809, 0.02977],
         'sphericalHarmonicsDegree': 2
     });
-    let path = 'assets/data/2109_SGrey/2109_SGrey' + (mode ? '' : '') + '.ply';
+    let path = 'assets/data/2109_SGrey/2109_S_Grey' + (mode ? '' : '') + '.ply';
     viewer.addSplatScene(path, {
       'streamView': true
     })
@@ -83,10 +83,10 @@
           const absoluteSrc = new URL(modelViewer.src, window.location.href).href;
           const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${absoluteSrc}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
           window.location.href = intent;
-          //window.location.href = 'xr.html?scene=2109_S_Grey&xr=ar';
+          ////window.location.href = 'xr.html?scene=5106_Red&xr=ar';
         } else {
           modelViewer.activateAR();
-          //alert('AR is coming soon to iPhones. Please use an Android device for now.');
+          ////alert('AR is coming soon to iPhones. Please use an Android device for now.');
 
         }
       });
