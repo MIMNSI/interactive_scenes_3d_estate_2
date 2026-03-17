@@ -12,8 +12,8 @@
     "license": "MIT",
     "type": "module",
     "scripts": {
-        "build-demo": "mkdir -p ./build/demo && cp -r ./demo ./build/ && cp ./node_modules/three/build/three.module.js ./build/demo/lib/three.module.js",
-        "build-library": "npx rollup -c && mkdir -p ./build/demo/lib && cp ./build/gaussian-splats-3d.module.* ./build/demo/lib/",
+        "build-demo": "npx shx mkdir -p ./build/demo/lib && npx shx cp -r ./demo ./build/ && npx shx cp ./node_modules/three/build/three.module.js ./build/demo/lib/three.module.js",
+        "build-library": "npx rollup -c && npx shx mkdir -p ./build/demo/lib && npx shx cp ./build/gaussian-splats-3d.module.* ./build/demo/lib/",
         "build": "npm run build-library && npm run build-demo",
         "build-demo-windows": "(if not exist \".\\build\\demo\" mkdir .\\build\\demo) && xcopy /E .\\demo .\\build\\demo && xcopy .\\node_modules\\three\\build\\three.module.js .\\build\\demo\\lib\\",
         "build-library-windows": "npx rollup -c && (if not exist \".\\build\\demo\\lib\" mkdir .\\build\\demo\\lib) && copy .\\build\\gaussian-splats-3d* .\\build\\demo\\lib\\",
@@ -64,6 +64,7 @@
         "http-server": "^14.1.1",
         "npm-watch": "0.11.0",
         "prettier": "3.0.2",
+        "shx": "^0.3.4",
         "prettier-eslint": "15.0.1",
         "rollup": "3.28.1",
         "url-loader": "4.1.1"
