@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, minimal-ui">
+  <title>Gaussian Splatting in AR</title>
+  
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "./webxr/gs/lib/three.module.js",
+            "gaussian-splats-3d": "./webxr/gs/lib/gs.module.js"
+        }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FFFFFF;
+      color: black;
+      margin: 0;
+      font-family: sans-serif;
+    }   
+    
+    #xr-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
+    #infoLabel {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.6); color: white; padding: 10px 15px;
+      border-radius: 20px; font-size: 14px; z-index: 10;
+    }
+
+    #viewButton {
+      position: fixed; bottom: 50px; left: 50%;
+      transform: translateX(-50%); background-color: #007AFF; color: white;
+      font-size: 16px; font-weight: bold; padding: 15px 25px; border: none;
+      border-radius: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 10; transition: background-color 0.3s, transform 0.2s;
+    }
+    #viewButton:hover {
+      background-color: #0056b3;
+    }
+    
+  </style>
+</head>
+
+<body class="body">
+
+    <div id="xr-container"></div>
+    
+    <div id="dom-overlay-root">
+        <label id="infoLabel">Swipe to Rotate, Pinch to Zoom</label>
+        <button id="viewButton">View in your Home</button>
+    </div>
+
+<script type="module">
+    import * as GaussianSplats3D from 'gaussian-splats-3d';
+
+    const xrContainer = document.getElementById('xr-container');
+    const viewInHomeButton = document.getElementById('viewButton');
+    const infoLabel = document.getElementById('infoLabel');
+
+    let viewer; // To hold the current viewer instance
+
+    const sceneData = [{
+        id: '5115BG',
+        url: 'webxr/gs/assets/data/5115_BrownGold/5115_BrownGold.splat',
+        // You can keep transform data here if needed for AR
+        transformAr: {
+            scale: { x: 1.5, y: 1.5, z: 1.5 },
+            position: { x: 0.0, y: 0.0, z: 0.0 },
+            rotate: { x: 90, y: 180.0, z: 0.0 }
+        }
+    }];
+
+    /**
+     * Loads a scene in either 3D or AR mode.
+     * @param {string} sceneId The ID of the scene to load.
+     * @param {string} xrMode Can be '' for 3D mode or 'ar' for AR mode.
+     */
+    const loadScene = (sceneId, xrMode) => {
+        const scene = sceneData.find(f => f.id === sceneId);
+        if (!scene) {
+            console.error("Scene not found!");
+            return;
+        }
+
+        // Clean up the previous viewer if it exists
+        if (viewer) {
+            viewer.destroy();
+        }
+        
+        // Hide UI elements if entering AR
+        if (xrMode === 'ar') {
+            viewInHomeButton.style.display = 'none';
+            infoLabel.style.display = 'none';
+        }
+
+        viewer = new GaussianSplats3D.Viewer({
+            rootElement: xrContainer,
+            cameraUp: [0.01896, -0.99955, -0.02341],
+            initialCameraPosition: [-0.98641, -0.83035, -0.28385],
+            initialCameraLookAt: [-0.00361, -0.20809, 0.02977],
+            xr: xrMode,
+            transformAr: scene.transformAr,
+            // Configure DOM overlay for any potential UI in AR
+            xrSessionInit: {
+                optionalFeatures: ['dom-overlay', 'hit-test', 'local-floor'],
+                domOverlay: {
+                    root: document.getElementById('dom-overlay-root')
+                }
+            }
+        });
+
+        viewer.loadFile(scene.url).then(() => {
+            viewer.start();
+        });
+    };
+
+    // --- Event Listener for the "View in your Home" Button ---
+    viewInHomeButton.addEventListener('click', () => {
+        // When clicked, destroy the 3D viewer and load the scene again in AR mode
+        loadScene('5115BG', 'ar');
+    });
+
+    // --- Initial Load ---
+    // Load the first scene in 3D mode when the page opens
+    loadScene('5115BG', '');
+
+</script>
+</body>
+</html>
