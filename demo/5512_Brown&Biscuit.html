@@ -171,7 +171,7 @@
   </label>
 
   <div id="bottomPanel">
-    <button id="viewButton">
+    <button id="viewButton" type="button">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
@@ -185,9 +185,14 @@
   <model-viewer
     ar="True"
     ar-modes="webxr scene-viewer quick-look"
+    xr-environment
+    exposure="1"
+    environment-image="neutral"
+    shadow-intensity="0"
+    shadow-softness="0"
     id="ar-model-viewer"
     src="https://metashop-italica.s3.eu-north-1.amazonaws.com/Italica/5512_Brown_Biscuit_.glb"
-    style="display:none;">
+    style="position:fixed; inset:0; opacity:0; pointer-events:none; z-index:-1;">
   </model-viewer>
 
   <script type="module">
@@ -236,18 +241,12 @@
   <script type="module">
     const modelViewer = document.querySelector('#ar-model-viewer');
     const arButton    = document.querySelector('#viewButton');
-    const isAndroid   = /android/i.test(navigator.userAgent);
     modelViewer.addEventListener('load', () => {
-      if (modelViewer.canActivateAR) arButton.style.display = 'flex';
+      arButton.style.display = 'flex';
+      arButton.disabled = false;
     });
     arButton.addEventListener('click', () => {
-      if (isAndroid) {
-        const src = new URL(modelViewer.src, window.location.href).href;
-        const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${src}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
-        window.location.href = intent;
-      } else {
-        modelViewer.activateAR();
-      }
+      modelViewer.activateAR();
     });
   </script>
 
