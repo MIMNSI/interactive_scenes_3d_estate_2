@@ -4,6 +4,15 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
   <meta content="ie=edge" http-equiv="x-ua-compatible"/>
+  <script>
+  const defaultColorTarget = '5106_White.html';
+  if (!new URLSearchParams(window.location.search).has('keepColor')) {
+    const targetUrl = new URL(defaultColorTarget, window.location.href);
+    targetUrl.search = window.location.search;
+    targetUrl.hash = window.location.hash;
+    window.location.replace(targetUrl.toString());
+  }
+</script>
   <title>3D Gaussian Splat Demo - 5106_Red</title>
   <script src="js/util.js" type="text/javascript"></script>
   <script type="importmap">
@@ -58,7 +67,7 @@
       border-radius: 1px; animation: barFill 6s ease-out forwards; }
 
     #themeToggle {
-      position: fixed; top: 18px; left: 18px; width: 40px; height: 40px;
+      position: fixed; top: 18px; right: 18px; width: 40px; height: 40px;
       border-radius: 50%; border: 1px solid var(--border); background: var(--toggle-bg);
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -254,8 +263,6 @@
   <script>
     const toggleBtn = document.getElementById('themeToggle');
     const htmlEl    = document.documentElement;
-    const saved     = localStorage.getItem('theme');
-    if (saved) htmlEl.setAttribute('data-theme', saved);
     toggleBtn.addEventListener('click', () => {
       const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       htmlEl.setAttribute('data-theme', next);
