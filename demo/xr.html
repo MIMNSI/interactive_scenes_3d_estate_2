@@ -499,24 +499,53 @@ const data = [
     };
 });
 
+const getProductFamilyId = (sceneId) => sceneId.split('_')[0];
+
+const getDefaultSceneForFamily = (scenes) => {
+    const whiteScene = scenes.find((scene) => /\bwhite\b/i.test(scene.name) || /_White/i.test(scene.id));
+    return whiteScene || scenes[0];
+};
+
+const scenesByFamily = data.reduce((groups, scene) => {
+    const familyId = getProductFamilyId(scene.id);
+    if (!groups.has(familyId)) groups.set(familyId, []);
+    groups.get(familyId).push(scene);
+    return groups;
+}, new Map());
+
+const defaultScenes = Array.from(scenesByFamily.values()).map(getDefaultSceneForFamily);
+
+const resolveSceneId = (sceneId) => {
+    const exactScene = data.find((scene) => scene.id === sceneId);
+    if (exactScene) return exactScene.id;
+
+    const familyScenes = scenesByFamily.get(sceneId);
+    if (familyScenes && familyScenes.length > 0) {
+        return getDefaultSceneForFamily(familyScenes).id;
+    }
+
+    return sceneId;
+};
+
 
 const openScene = (scene, xr, vid = '') => {
     const index = 'xr.html'
+    const resolvedScene = resolveSceneId(scene);
     if (vid != '') {
             window.location.href = vid
     }
-    else if (!scene) {
+    else if (!resolvedScene) {
         window.location.href = index
     }
     else {
-        window.location.href = `${index}?scene=${scene}&xr=${xr}`
+        window.location.href = `${index}?scene=${resolvedScene}&xr=${xr}`
     }
 }
 
 const loadData = () => {
     let inner = ''
-    if (data && data.length > 0){
-        for (const scene of data) {
+    if (defaultScenes && defaultScenes.length > 0){
+        for (const scene of defaultScenes) {
             if (scene.hideFromMenu) {
                 continue
             }                       
@@ -530,8 +559,8 @@ const loadData = () => {
     }
     const header = `<div class="header"><h2>Gaussian Splatting in AR/VR</h2>`
     listElement.innerHTML = `${header}<div><ul>${inner}</ul></div>`
-    if (data && data.length > 0){
-        for (const scene of data) {
+    if (defaultScenes && defaultScenes.length > 0){
+        for (const scene of defaultScenes) {
             const elementAr = document.getElementById(`link-${scene.id}-ar`)
             if (elementAr) {
                 elementAr.onclick = () => { scene.v ? openScene(scene.id,'ar',scene.v) : openScene(scene.id,'ar') }
