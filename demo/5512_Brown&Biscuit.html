@@ -96,7 +96,8 @@
       transition: background 0.35s;
     }
     #viewButton {
-      display: flex; align-items: center; justify-content: center; gap: 9px;
+      display: none; /* Hidden by default, revealed if AR is capable */
+      align-items: center; justify-content: center; gap: 9px;
       width: 100%; max-width: 320px; background: var(--btn-bg); color: var(--btn-fg);
       font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 600;
       letter-spacing: 0.02em; padding: 15px 28px; border: none; border-radius: 14px;
@@ -183,7 +184,7 @@
   </div>
 
   <model-viewer
-    ar="True"
+    ar
     ar-modes="webxr scene-viewer quick-look"
     xr-environment
     exposure="1"
@@ -191,7 +192,7 @@
     shadow-intensity="0"
     shadow-softness="0"
     id="ar-model-viewer"
-    src="https://metashop-italica.s3.eu-north-1.amazonaws.com/Italica/5512Biscuit.glb"
+    src="https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/assets/data/5512_Brown&Biscuit/5512_Brown_Biscuit.glb"
     style="position:fixed; inset:0; opacity:0; pointer-events:none; z-index:-1;">
   </model-viewer>
 
@@ -241,10 +242,16 @@
   <script type="module">
     const modelViewer = document.querySelector('#ar-model-viewer');
     const arButton    = document.querySelector('#viewButton');
+    
+    // Listen for model load and enable AR button if supported
     modelViewer.addEventListener('load', () => {
-      arButton.style.display = 'flex';
-      arButton.disabled = false;
+      if (modelViewer.canActivateAR) {
+        arButton.style.display = 'flex';
+        arButton.disabled = false;
+      }
     });
+
+    // Native trigger for WebXR/Scene Viewer/Quick Look
     arButton.addEventListener('click', () => {
       modelViewer.activateAR();
     });
