@@ -42,6 +42,21 @@
       gap: 18px; z-index: 200; transition: opacity 0.5s ease, visibility 0.5s ease;
     }
     #loadingOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #arLaunchOverlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.42);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; z-index: 220; transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    #arLaunchOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .ar-launch-card {
+      min-width: 220px; padding: 18px 20px; border-radius: 18px;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    }
+    .ar-launch-card .loader-wrap { width: 40px; height: 40px; }
+    .ar-launch-title { color: var(--text-hi); font-size: 15px; font-weight: 600; }
+    .ar-launch-copy { color: var(--text-lo); font-size: 12px; text-align: center; max-width: 220px; }
     .loader-wrap { position: relative; width: 52px; height: 52px; }
     .loader-track { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--loader-track); }
     .loader-arc { position: absolute; inset: 0; border-radius: 50%;
@@ -140,6 +155,18 @@
     <div class="loader-bar-wrap"><div class="loader-bar-fill"></div></div>
   </div>
 
+  <div id="arLaunchOverlay" class="hidden" aria-live="polite">
+    <div class="ar-launch-card">
+      <div class="loader-wrap">
+        <div class="loader-track"></div>
+        <div class="loader-arc"></div>
+        <div class="loader-dot"></div>
+      </div>
+      <div class="ar-launch-title">Preparing AR</div>
+      <div class="ar-launch-copy">Downloading the 3D model and opening your camera view.</div>
+    </div>
+  </div>
+
   <button id="themeToggle" aria-label="Toggle theme">
     <svg id="iconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -186,7 +213,7 @@
     ar="True"
     ar-modes="webxr scene-viewer quick-look"
     id="ar-model-viewer"
-    src="https://metashop-italica.s3.eu-north-1.amazonaws.com/Italica/8106_beige&amp;white.glb"
+    src="assets/data/8106_Beige&amp;White/8106_beige_white.glb"
     style="display:none;">
   </model-viewer>
 
@@ -237,10 +264,20 @@
     const modelViewer = document.querySelector('#ar-model-viewer');
     const arButton    = document.querySelector('#viewButton');
     const isAndroid   = /android/i.test(navigator.userAgent);
+    const arLaunchOverlay = document.querySelector('#arLaunchOverlay');
+    const showArLaunchOverlay = () => {
+      arLaunchOverlay.classList.remove('hidden');
+      arButton.disabled = true;
+    };
+    const hideArLaunchOverlay = () => {
+      arLaunchOverlay.classList.add('hidden');
+      arButton.disabled = false;
+    };
     modelViewer.addEventListener('load', () => {
       if (modelViewer.canActivateAR) arButton.style.display = 'flex';
     });
     arButton.addEventListener('click', () => {
+      showArLaunchOverlay();
       if (isAndroid) {
         const src = new URL(modelViewer.src, window.location.href).href;
         const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${src}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
@@ -248,6 +285,10 @@
       } else {
         modelViewer.activateAR();
       }
+    });
+    window.addEventListener('pageshow', hideArLaunchOverlay);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) hideArLaunchOverlay();
     });
   </script>
 
