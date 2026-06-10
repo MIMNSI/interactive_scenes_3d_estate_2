@@ -42,6 +42,21 @@
       gap: 18px; z-index: 200; transition: opacity 0.5s ease, visibility 0.5s ease;
     }
     #loadingOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    #arLaunchOverlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.42);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; z-index: 220; transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    #arLaunchOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .ar-launch-card {
+      min-width: 220px; padding: 18px 20px; border-radius: 18px;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    }
+    .ar-launch-card .loader-wrap { width: 40px; height: 40px; }
+    .ar-launch-title { color: var(--text-hi); font-size: 15px; font-weight: 600; }
+    .ar-launch-copy { color: var(--text-lo); font-size: 12px; text-align: center; max-width: 220px; }
     .loader-wrap { position: relative; width: 52px; height: 52px; }
     .loader-track { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--loader-track); }
     .loader-arc { position: absolute; inset: 0; border-radius: 50%;
@@ -141,6 +156,18 @@
     <div class="loader-bar-wrap"><div class="loader-bar-fill"></div></div>
   </div>
 
+  <div id="arLaunchOverlay" class="hidden" aria-live="polite">
+    <div class="ar-launch-card">
+      <div class="loader-wrap">
+        <div class="loader-track"></div>
+        <div class="loader-arc"></div>
+        <div class="loader-dot"></div>
+      </div>
+      <div class="ar-launch-title">Preparing AR</div>
+      <div class="ar-launch-copy">Downloading the 3D model and opening your camera view.</div>
+    </div>
+  </div>
+
   <button id="themeToggle" aria-label="Toggle theme">
     <svg id="iconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -192,7 +219,7 @@
     shadow-intensity="0"
     shadow-softness="0"
     id="ar-model-viewer"
-    src="https://mimnsi.github.io/interactive_scenes_3d_estate_2/demo/assets/data/5512_Brown&Biscuit/5512_Brown_Biscuit.glb"
+    src="assets/data/5512_Brown&amp;Biscuit/5512_biscuit.glb"
     style="position:fixed; inset:0; opacity:0; pointer-events:none; z-index:-1;">
   </model-viewer>
 
@@ -242,6 +269,15 @@
   <script type="module">
     const modelViewer = document.querySelector('#ar-model-viewer');
     const arButton    = document.querySelector('#viewButton');
+    const arLaunchOverlay = document.querySelector('#arLaunchOverlay');
+    const showArLaunchOverlay = () => {
+      arLaunchOverlay.classList.remove('hidden');
+      arButton.disabled = true;
+    };
+    const hideArLaunchOverlay = () => {
+      arLaunchOverlay.classList.add('hidden');
+      arButton.disabled = false;
+    };
     
     // Listen for model load and enable AR button if supported
     modelViewer.addEventListener('load', () => {
@@ -253,7 +289,12 @@
 
     // Native trigger for WebXR/Scene Viewer/Quick Look
     arButton.addEventListener('click', () => {
+      showArLaunchOverlay();
       modelViewer.activateAR();
+    });
+    window.addEventListener('pageshow', hideArLaunchOverlay);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) hideArLaunchOverlay();
     });
   </script>
 
