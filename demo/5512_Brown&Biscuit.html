@@ -111,7 +111,7 @@
       transition: background 0.35s;
     }
     #viewButton {
-      display: none; /* Hidden by default, revealed if AR is capable */
+      display: none;
       align-items: center; justify-content: center; gap: 9px;
       width: 100%; max-width: 320px; background: var(--btn-bg); color: var(--btn-fg);
       font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 600;
@@ -219,7 +219,7 @@
     shadow-intensity="0"
     shadow-softness="0"
     id="ar-model-viewer"
-    src="assets/data/5512_Brown&amp;Biscuit/5512_brown_almond.glb"
+    src="assets/data/5512_Brown&amp;Biscuit/5512_biscuit.glb"
     style="position:fixed; inset:0; opacity:0; pointer-events:none; z-index:-1;">
   </model-viewer>
 
@@ -270,31 +270,72 @@
     const modelViewer = document.querySelector('#ar-model-viewer');
     const arButton    = document.querySelector('#viewButton');
     const arLaunchOverlay = document.querySelector('#arLaunchOverlay');
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const shouldShowArButton = isAndroid || isIOS;
+    let pendingArLaunch = false;
+    let arRecoveryTimer = null;
+
     const showArLaunchOverlay = () => {
       arLaunchOverlay.classList.remove('hidden');
       arButton.disabled = true;
     };
     const hideArLaunchOverlay = () => {
       arLaunchOverlay.classList.add('hidden');
-      arButton.disabled = false;
+      arButton.disabled = !shouldShowArButton;
     };
-    
-    // Listen for model load and enable AR button if supported
+
+    const refreshArModel = () => {
+      const currentSrc = modelViewer.getAttribute('src');
+      if (!currentSrc || isAndroid) return;
+      modelViewer.removeAttribute('src');
+      requestAnimationFrame(() => {
+        modelViewer.setAttribute('src', currentSrc);
+      });
+    };
+
+    const recoverAfterAr = () => {
+      pendingArLaunch = false;
+      if (arRecoveryTimer) clearTimeout(arRecoveryTimer);
+      hideArLaunchOverlay();
+      if (!isAndroid && !modelViewer.loaded) {
+        arRecoveryTimer = setTimeout(refreshArModel, 150);
+      }
+    };
+
+    if (shouldShowArButton) {
+      arButton.style.display = 'flex';
+      arButton.disabled = false;
+    }
+
     modelViewer.addEventListener('load', () => {
-      if (modelViewer.canActivateAR) {
-        arButton.style.display = 'flex';
-        arButton.disabled = false;
+      if (pendingArLaunch && !isAndroid) {
+        pendingArLaunch = false;
+        modelViewer.activateAR();
       }
     });
 
-    // Native trigger for WebXR/Scene Viewer/Quick Look
-    arButton.addEventListener('click', () => {
-      showArLaunchOverlay();
-      modelViewer.activateAR();
+    modelViewer.addEventListener('error', recoverAfterAr);
+    modelViewer.addEventListener('ar-status', (event) => {
+      const status = event.detail.status;
+      if (status === 'session-started' || status === 'failed' || status === 'not-presenting') {
+        recoverAfterAr();
+      }
     });
-    window.addEventListener('pageshow', hideArLaunchOverlay);
+
+    arButton.addEventListener('click', () => {
+      if (!shouldShowArButton) return;
+      showArLaunchOverlay();
+      if (modelViewer.loaded) {
+        modelViewer.activateAR();
+        return;
+      }
+      pendingArLaunch = true;
+    });
+    window.addEventListener('pageshow', recoverAfterAr);
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) hideArLaunchOverlay();
+      if (!document.hidden) recoverAfterAr();
     });
   </script>
 
