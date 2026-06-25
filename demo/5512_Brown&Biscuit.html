@@ -274,7 +274,9 @@
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const shouldShowArButton = isAndroid || isIOS;
+    const arReturnReloadKey = 'ar-return-reload';
     let pendingArLaunch = false;
+    let arSessionStarted = false;
     let arRecoveryTimer = null;
 
     const showArLaunchOverlay = () => {
@@ -297,11 +299,19 @@
 
     const recoverAfterAr = () => {
       pendingArLaunch = false;
+      arSessionStarted = false;
       if (arRecoveryTimer) clearTimeout(arRecoveryTimer);
       hideArLaunchOverlay();
       if (!isAndroid && !modelViewer.loaded) {
         arRecoveryTimer = setTimeout(refreshArModel, 150);
       }
+    };
+
+    const reloadAfterArReturnIfNeeded = () => {
+      if (sessionStorage.getItem(arReturnReloadKey) !== '1') return false;
+      sessionStorage.removeItem(arReturnReloadKey);
+      window.location.reload();
+      return true;
     };
 
     if (shouldShowArButton) {
@@ -319,7 +329,12 @@
     modelViewer.addEventListener('error', recoverAfterAr);
     modelViewer.addEventListener('ar-status', (event) => {
       const status = event.detail.status;
-      if (status === 'session-started' || status === 'failed' || status === 'not-presenting') {
+      if (status === 'session-started') {
+        arSessionStarted = true;
+        hideArLaunchOverlay();
+        return;
+      }
+      if (status === 'failed' || status === 'not-presenting') {
         recoverAfterAr();
       }
     });
@@ -333,9 +348,20 @@
       }
       pendingArLaunch = true;
     });
-    window.addEventListener('pageshow', recoverAfterAr);
+    window.addEventListener('pagehide', () => {
+      if (pendingArLaunch || arSessionStarted) {
+        sessionStorage.setItem(arReturnReloadKey, '1');
+      }
+    });
+    window.addEventListener('pageshow', () => {
+      if (reloadAfterArReturnIfNeeded()) return;
+      recoverAfterAr();
+    });
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) recoverAfterAr();
+      if (!document.hidden) {
+        if (reloadAfterArReturnIfNeeded()) return;
+        recoverAfterAr();
+      }
     });
   </script>
 
