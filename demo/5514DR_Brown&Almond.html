@@ -184,9 +184,9 @@
 
   <model-viewer
     ar="True"
-    ar-modes="webxr scene-viewer quick-look"
+    ar-modes="scene-viewer quick-look webxr"
     id="ar-model-viewer"
-    src="https://metashop-italica.s3.eu-north-1.amazonaws.com/Italica/5514DR_almond.glb"
+    src="assets/data/5514DR_Brown&Almond/5514DR_nonhd.glb"
     style="display:none;">
   </model-viewer>
 
@@ -236,17 +236,17 @@
   <script type="module">
     const modelViewer = document.querySelector('#ar-model-viewer');
     const arButton    = document.querySelector('#viewButton');
-    const isAndroid   = /android/i.test(navigator.userAgent);
+    const isMobile    = /android|iphone|ipad|ipod/i.test(navigator.userAgent) || navigator.maxTouchPoints > 1;
+
     modelViewer.addEventListener('load', () => {
-      if (modelViewer.canActivateAR) arButton.style.display = 'flex';
+      if (modelViewer.canActivateAR || isMobile) arButton.style.display = 'flex';
     });
-    arButton.addEventListener('click', () => {
-      if (isAndroid) {
-        const src = new URL(modelViewer.src, window.location.href).href;
-        const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${src}&mode=ar_only#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(window.location.href)};end;`;
-        window.location.href = intent;
-      } else {
-        modelViewer.activateAR();
+
+    arButton.addEventListener('click', async () => {
+      try {
+        await modelViewer.activateAR();
+      } catch (error) {
+        console.error('AR launch failed:', error);
       }
     });
   </script>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+  <meta content="ie=edge" http-equiv="x-ua-compatible"/>
+  <title>3D Model Viewer - SL-50 Workstation</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root, [data-theme="dark"] {
+      --bg: #111111;
+      --bg-panel: rgba(0, 0, 0, 0.88);
+      --bg-glass: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --text-hi: rgba(255, 255, 255, 0.92);
+      --text-lo: rgba(255, 255, 255, 0.42);
+      --btn-bg: #ffffff;
+      --btn-fg: #111111;
+      --btn-glow: rgba(255, 255, 255, 0.18);
+      --loader-track: rgba(255, 255, 255, 0.10);
+      --loader-head: #ffffff;
+      --overlay-bg: #111111;
+      --toggle-bg: rgba(255, 255, 255, 0.09);
+      --toggle-icon: rgba(255, 255, 255, 0.65);
+    }
+    [data-theme="light"] {
+      --bg: #f4f4f2;
+      --bg-panel: rgba(244, 244, 242, 0.92);
+      --bg-glass: rgba(0, 0, 0, 0.05);
+      --border: rgba(0, 0, 0, 0.10);
+      --text-hi: rgba(0, 0, 0, 0.88);
+      --text-lo: rgba(0, 0, 0, 0.38);
+      --btn-bg: #111111;
+      --btn-fg: #ffffff;
+      --btn-glow: rgba(0, 0, 0, 0.14);
+      --loader-track: rgba(0, 0, 0, 0.08);
+      --loader-head: #111111;
+      --overlay-bg: #f4f4f2;
+      --toggle-bg: rgba(0, 0, 0, 0.07);
+      --toggle-icon: rgba(0, 0, 0, 0.55);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      background-color: var(--bg);
+      height: 100dvh;
+      overflow: hidden;
+      font-family: 'DM Sans', sans-serif;
+      transition: background-color 0.35s ease;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg);
+      --poster-color: transparent;
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      z-index: 200;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #loadingOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    #arLaunchOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.42);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 220;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    #arLaunchOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .ar-launch-card {
+      min-width: 220px;
+      padding: 18px 20px;
+      border-radius: 18px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+    }
+    .ar-launch-card .loader-wrap { width: 40px; height: 40px; }
+    .ar-launch-title { color: var(--text-hi); font-size: 15px; font-weight: 600; }
+    .ar-launch-copy { color: var(--text-lo); font-size: 12px; text-align: center; max-width: 220px; }
+
+    .loader-wrap { position: relative; width: 52px; height: 52px; }
+    .loader-track { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--loader-track); }
+    .loader-arc {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.5px solid transparent;
+      border-top-color: var(--loader-head);
+      animation: spin 0.85s linear infinite;
+    }
+    .loader-dot { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .loader-dot::after {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--loader-head);
+      opacity: 0.45;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    .loader-label {
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-lo);
+      font-weight: 500;
+    }
+    .loader-bar-wrap {
+      width: 120px;
+      height: 1px;
+      background: var(--loader-track);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    .loader-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--loader-head);
+      border-radius: 1px;
+      animation: barFill 6s ease-out forwards;
+    }
+
+    #themeToggle {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--toggle-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: background 0.3s, border-color 0.3s, transform 0.18s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #themeToggle:hover { transform: scale(1.09); }
+    #themeToggle:active { transform: scale(0.93); }
+    #themeToggle svg { color: var(--toggle-icon); transition: color 0.3s; }
+    [data-theme="dark"] #iconSun { display: none; }
+    [data-theme="dark"] #iconMoon { display: block; }
+    [data-theme="light"] #iconSun { display: block; }
+    [data-theme="light"] #iconMoon { display: none; }
+
+    #infoLabel {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px) saturate(1.3);
+      -webkit-backdrop-filter: blur(16px) saturate(1.3);
+      border: 1px solid var(--border);
+      color: var(--text-hi);
+      padding: 9px 16px;
+      border-radius: 40px;
+      font-size: 12.5px;
+      font-weight: 400;
+      letter-spacing: 0.025em;
+      z-index: 10;
+      white-space: nowrap;
+      animation: fadeDown 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+    #infoLabel svg { opacity: 0.55; flex-shrink: 0; }
+    .dot-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--text-lo); flex-shrink: 0; }
+
+    #bottomPanel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 32px 24px calc(24px + env(safe-area-inset-bottom));
+      background: linear-gradient(to top, var(--bg-panel) 55%, transparent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+      animation: fadeUp 0.75s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+      transition: background 0.35s;
+    }
+    #viewButton {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      width: 100%;
+      max-width: 320px;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 15px 28px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 6px 28px var(--btn-glow), 0 1px 4px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.16s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #viewButton::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transform: skewX(-18deg);
+      transition: left 0.5s ease;
+    }
+    #viewButton:hover::after { left: 170%; }
+    #viewButton:hover { transform: translateY(-2px); box-shadow: 0 10px 36px var(--btn-glow), 0 2px 8px rgba(0, 0, 0, 0.15); }
+    #viewButton:active { transform: scale(0.97); }
+    #viewButton:disabled { opacity: 0.72; cursor: default; }
+    #viewButton svg { flex-shrink: 0; }
+
+    #errorToast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(112px + env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      max-width: calc(100% - 32px);
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(17, 17, 17, 0.9);
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 12.5px;
+      line-height: 1.4;
+      z-index: 230;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      text-align: center;
+    }
+    #errorToast.visible { opacity: 1; visibility: visible; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { opacity: .45; transform: scale(1); } 50% { opacity: 1; transform: scale(1.55); } }
+    @keyframes barFill { to { width: 88%; } }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <model-viewer
+    id="productViewer"
+    src="assets/data/SL-50_Workstation/SL-50_Workstation.glb"
+    alt="SL-50 Workstation"
+    camera-controls
+    touch-action="pan-y"
+    ar
+    ar-modes="scene-viewer quick-look webxr"
+    interaction-prompt="none"
+    shadow-intensity="0"
+    shadow-softness="0"
+    exposure="1"
+    environment-image="neutral"
+    xr-environment
+    camera-orbit="0deg 75deg auto"
+    min-camera-orbit="auto 55deg auto"
+    max-camera-orbit="auto 90deg auto"
+    field-of-view="30deg">
+  </model-viewer>
+
+  <div id="loadingOverlay">
+    <div class="loader-wrap">
+      <div class="loader-track"></div>
+      <div class="loader-arc"></div>
+      <div class="loader-dot"></div>
+    </div>
+    <span class="loader-label">Loading Model</span>
+    <div class="loader-bar-wrap"><div class="loader-bar-fill"></div></div>
+  </div>
+
+  <div id="arLaunchOverlay" class="hidden" aria-live="polite">
+    <div class="ar-launch-card">
+      <div class="loader-wrap">
+        <div class="loader-track"></div>
+        <div class="loader-arc"></div>
+        <div class="loader-dot"></div>
+      </div>
+      <div class="ar-launch-title">Preparing AR</div>
+      <div class="ar-launch-copy">Opening the 3D model in your environment.</div>
+    </div>
+  </div>
+
+  <div id="errorToast" role="status" aria-live="polite"></div>
+
+  <button id="themeToggle" aria-label="Toggle theme">
+    <svg id="iconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+    <svg id="iconSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+  </button>
+
+  <label id="infoLabel">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v4"/>
+      <path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/>
+      <path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/>
+      <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+    </svg>
+    Swipe to Rotate
+    <span class="dot-sep"></span>
+    Pinch to Zoom
+  </label>
+
+  <div id="bottomPanel">
+    <button id="viewButton" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+        <line x1="12" y1="22.08" x2="12" y2="12"/>
+      </svg>
+      View in your Home
+    </button>
+  </div>
+
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <script type="module">
+    const viewer = document.getElementById('productViewer');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const arLaunchOverlay = document.getElementById('arLaunchOverlay');
+    const viewButton = document.getElementById('viewButton');
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+    const errorToast = document.getElementById('errorToast');
+    const isLikelyMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent) || navigator.maxTouchPoints > 1;
+    let arPending = false;
+    let toastTimer = null;
+
+    function hideLoadingOverlay() {
+      loadingOverlay.classList.add('hidden');
+    }
+
+    function showArOverlay() {
+      arLaunchOverlay.classList.remove('hidden');
+      viewButton.disabled = true;
+    }
+
+    function hideArOverlay() {
+      arLaunchOverlay.classList.add('hidden');
+      viewButton.disabled = false;
+    }
+
+    function showError(message) {
+      errorToast.textContent = message;
+      errorToast.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => errorToast.classList.remove('visible'), 5200);
+    }
+
+    function syncArButton() {
+      if (isLikelyMobile || viewer.canActivateAR) {
+        viewButton.style.display = 'flex';
+      }
+    }
+
+    viewer.addEventListener('load', () => {
+      hideLoadingOverlay();
+      syncArButton();
+    });
+
+    viewer.addEventListener('error', () => {
+      hideLoadingOverlay();
+      hideArOverlay();
+      arPending = false;
+      showError('The 3D model could not be loaded.');
+    });
+
+    viewer.addEventListener('progress', (event) => {
+      const fill = document.querySelector('.loader-bar-fill');
+      if (!fill || event.detail.totalProgress === 0) return;
+      fill.style.width = Math.min(event.detail.totalProgress * 100, 95) + '%';
+    });
+
+    viewer.addEventListener('ar-status', (event) => {
+      const status = event.detail.status;
+      if (status === 'session-started') {
+        arPending = false;
+        hideArOverlay();
+        return;
+      }
+      if (status === 'failed') {
+        arPending = false;
+        hideArOverlay();
+        showError('AR could not start. On Android, Scene Viewer needs the GLB to be reachable from a public HTTPS URL.');
+        return;
+      }
+      if (status === 'not-presenting') {
+        arPending = false;
+        hideArOverlay();
+      }
+    });
+
+    viewButton.addEventListener('click', async () => {
+      if (arPending) return;
+      arPending = true;
+      showArOverlay();
+      try {
+        await viewer.activateAR();
+      } catch (error) {
+        arPending = false;
+        hideArOverlay();
+        showError('AR launch failed. If you are testing on Android, try a public HTTPS-hosted GLB.');
+      }
+    });
+
+    window.addEventListener('pageshow', () => {
+      arPending = false;
+      hideArOverlay();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        arPending = false;
+        hideArOverlay();
+      }
+    });
+
+    themeToggle.addEventListener('click', () => {
+      const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      htmlEl.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+
+    syncArButton();
+    window.setTimeout(hideLoadingOverlay, 12000);
+  </script>
+</body>
+</html>
