@@ -80,6 +80,11 @@
                 status.textContent = 'AR did not start. Please try again.';
             }, 30000);
             try {
+                // Make the iframe renderable before handing its canvas to WebXR.
+                // The parent's message loop may be throttled during immersive startup.
+                frame.style.opacity = '1';
+                frame.style.pointerEvents = 'auto';
+                frame.style.zIndex = '10000';
                 frame.contentWindow.startProductAR();
             } catch (error) {
                 console.error(error);

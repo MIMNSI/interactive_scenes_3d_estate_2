@@ -33,7 +33,12 @@ try {
         app.xr.on('error', fail);
         // Called synchronously by the parent click; no navigation or async hop.
         window.startProductAR = () => {
-            if (!firstFrame || app.xr.active) return;
+            if (!firstFrame) throw new Error('The AR model is not ready.');
+            if (app.xr.active) return;
+            if (!app.xr.isAvailable('immersive-ar')) {
+                throw new Error('An immersive AR session is not available.');
+            }
+            app.renderNextFrame = true;
             events.fire('startAR');
         };
     }
