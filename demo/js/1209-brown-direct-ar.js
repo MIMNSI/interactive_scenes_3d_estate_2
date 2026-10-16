@@ -18,7 +18,7 @@
         frame.allow = 'fullscreen; xr-spatial-tracking';
         frame.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;opacity:0;pointer-events:none;z-index:-1';
         const url = new URL('supersplat-viewer/direct-ar.html', location.href);
-        url.searchParams.set('content', new URL('assets/data/1209_Brown/1209_Brown.ply', location.href).href);
+        url.searchParams.set('content', new URL('assets/data/1209_Brown/1209_Brown_sh2.compressed.ply', location.href).href);
         url.searchParams.set('webgl', '');
         url.searchParams.set('noui', '');
         frame.src = url.href;
